@@ -53,6 +53,5 @@ yarn-error.log*
 # Turbopack
 .turbo
 
-# PWA
-sw.js
+# PWA (workbox generated files only — public/sw.js is now a source file)
 workbox-*.js

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Lora } from "next/font/google";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const ebGaramond = EB_Garamond({
@@ -56,6 +57,7 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

@@ -37,7 +37,7 @@ function TopBar({ showSeason = false, lunarEvent }: TopBarProps) {
   const season = getCurrentSeason();
 
   return (
-    <header className="bg-[var(--parchment)] border-b border-[var(--hairline)]" style={{ borderBottomWidth: '0.5px' }}>
+    <header className="sticky top-0 z-30 bg-[var(--parchment)] border-b border-[var(--hairline)]" style={{ borderBottomWidth: '0.5px' }}>
       <div className="h-[56px] flex items-center justify-between px-4">
         {/* Wordmark */}
         <h1 className="font-[family-name:var(--font-display)] text-[28px] font-semibold text-[var(--iron-gall)] leading-none">

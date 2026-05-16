@@ -92,7 +92,7 @@ function getStatusBadge(nextTask: SerializedNextTask | null, completedTasks: num
   const { daysUntil, title, status } = nextTask;
 
   // Short action label from the title (strip plant name prefix)
-  const shortTitle = title.replace(/^(Start|Harden off|Transplant|Fertilize|First fertilize|Stake and prune|Direct sow|Thin|Harvest|Set up|Succession sow|Hill up|Stop watering|Plant|Provide trellis)\s*/i, '$1');
+  const shortTitle = title.replace(/^(Start|Harden off|Transplant|Fertilize|First fertilize|Stake and prune|Direct sow|Thin|Harvest|Set up|Succession sow|Hill up|Stop watering|Plant|Provide trellis)\s*/i, '$1 ').trim();
 
   let label: string;
   if (daysUntil < 0) {
@@ -281,126 +281,116 @@ function GardenDetail({ catalog, plantActions, frostInfo }: GardenDetailProps) {
               const isExpanded = expandedPlantId === plant.plantId;
 
               return (
-                <button
-                  key={plant.plantId}
-                  onClick={() => setExpandedPlantId(isExpanded ? null : plant.plantId)}
-                  className={[
-                    'bg-[var(--aged-paper)] border border-[var(--hairline)] rounded-[var(--radius-md)] shadow-[var(--shadow-1)]',
-                    'p-4 text-left cursor-pointer transition-all duration-150',
-                    isExpanded ? 'ring-1 ring-[var(--forest)]' : '',
-                  ].join(' ')}
-                >
-                  {/* Plant name */}
-                  <div className="flex items-baseline gap-1.5 mb-2">
-                    <span className="font-[family-name:var(--font-display)] text-[19px] font-semibold text-[var(--iron-gall)] leading-tight">
-                      {plant.customName || plant.plantName}
-                    </span>
-                    {plant.count > 1 && (
-                      <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--sepia)]">
-                        ×{plant.count}
+                <div key={plant.plantId} className={isExpanded ? 'col-span-2' : ''}>
+                  <button
+                    onClick={() => setExpandedPlantId(isExpanded ? null : plant.plantId)}
+                    className={[
+                      'w-full bg-[var(--aged-paper)] border border-[var(--hairline)] rounded-[var(--radius-md)] shadow-[var(--shadow-1)]',
+                      'p-4 text-left cursor-pointer transition-all duration-150',
+                      isExpanded ? 'border-[var(--forest)]' : '',
+                    ].join(' ')}
+                  >
+                    {/* Plant name */}
+                    <div className="flex items-baseline gap-1.5 mb-2">
+                      <span className="font-[family-name:var(--font-display)] text-[19px] font-semibold text-[var(--iron-gall)] leading-tight">
+                        {plant.customName || plant.plantName}
                       </span>
-                    )}
-                  </div>
-
-                  {/* Status badge */}
-                  <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${badge.bg}`}>
-                    {badge.icon && (
-                      <Check size={12} strokeWidth={2} className={badge.color} />
-                    )}
-                    <span className={`font-[family-name:var(--font-body)] text-[13px] ${badge.color} leading-tight`}>
-                      {badge.label}
-                    </span>
-                  </div>
-
-                  {/* Progress indicator */}
-                  <div className="mt-2 flex items-center gap-1.5">
-                    <div className="flex-1 h-[3px] bg-[var(--hairline)] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[var(--forest)] rounded-full transition-all duration-300"
-                        style={{ width: `${(plant.completedTasks / plant.totalTasks) * 100}%` }}
-                      />
+                      {plant.count > 1 && (
+                        <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--sepia)]">
+                          ×{plant.count}
+                        </span>
+                      )}
                     </div>
-                    <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--text-tertiary)]">
-                      {plant.completedTasks}/{plant.totalTasks}
-                    </span>
-                  </div>
-                </button>
+
+                    {/* Status badge */}
+                    <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${badge.bg}`}>
+                      {badge.icon && (
+                        <Check size={12} strokeWidth={2} className={badge.color} />
+                      )}
+                      <span className={`font-[family-name:var(--font-body)] text-[13px] ${badge.color} leading-tight`}>
+                        {badge.label}
+                      </span>
+                    </div>
+
+                    {/* Progress indicator */}
+                    <div className="mt-2 flex items-center gap-1.5">
+                      <div className="flex-1 h-[3px] bg-[var(--hairline)] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[var(--forest)] rounded-full transition-all duration-300"
+                          style={{ width: `${(plant.completedTasks / plant.totalTasks) * 100}%` }}
+                        />
+                      </div>
+                      <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--text-tertiary)]">
+                        {plant.completedTasks}/{plant.totalTasks}
+                      </span>
+                    </div>
+                  </button>
+
+                  {/* Inline expanded detail */}
+                  {isExpanded && (
+                    <div className="mt-2 bg-[var(--vellum)] border border-[var(--hairline)] rounded-[var(--radius-md)] p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-[family-name:var(--font-display)] text-[16px] font-semibold text-[var(--iron-gall)]">
+                          Task Timeline
+                        </h3>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); archivePlant(plant.plantId); }}
+                          className="flex items-center gap-1.5 px-2 py-1 rounded text-[var(--text-tertiary)] hover:text-[var(--bordeaux)] hover:bg-[var(--aged-paper)] transition-colors cursor-pointer"
+                          aria-label={`Archive ${plant.customName || plant.plantName}`}
+                        >
+                          <Archive size={14} strokeWidth={1.5} />
+                          <span className="font-[family-name:var(--font-body)] text-[12px]">Archive</span>
+                        </button>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        {plant.allTasks.map((task) => (
+                          <div
+                            key={task.completionKey}
+                            className={[
+                              'flex items-start gap-3 py-2 px-2 rounded-[var(--radius-md)]',
+                              task.completed ? 'opacity-60' : '',
+                            ].join(' ')}
+                          >
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!task.completed) completeTask(plant.plantId, task.completionKey);
+                              }}
+                              disabled={task.completed || completingTask === task.completionKey}
+                              className={[
+                                'flex-shrink-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center mt-0.5 cursor-pointer',
+                                task.completed
+                                  ? 'bg-[var(--forest)] border-[var(--forest)]'
+                                  : 'border-[var(--hairline)] hover:border-[var(--forest)]',
+                                completingTask === task.completionKey ? 'animate-pulse' : '',
+                              ].join(' ')}
+                              aria-label={task.completed ? 'Completed' : `Complete ${task.title}`}
+                            >
+                              {task.completed && <Check size={12} strokeWidth={3} className="text-white" />}
+                            </button>
+                            <div className="flex-1 min-w-0">
+                              <span className={[
+                                'font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)]',
+                                task.completed ? 'line-through' : '',
+                              ].join(' ')}>
+                                {task.title}
+                              </span>
+                              <div>
+                                <span className="font-[family-name:var(--font-body)] text-[12px] text-[var(--text-tertiary)]">
+                                  {formatTaskDate(task.date)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
-
-          {/* Expanded Detail Panel (below grid) */}
-          {expandedPlantId && (() => {
-            const plant = plants.find((p) => p.plantId === expandedPlantId);
-            if (!plant) return null;
-
-            return (
-              <div className="mt-3 bg-[var(--aged-paper)] border border-[var(--hairline)] rounded-[var(--radius-md)] shadow-[var(--shadow-1)] p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-[family-name:var(--font-display)] text-[16px] font-semibold text-[var(--iron-gall)]">
-                    {plant.customName || plant.plantName} — Tasks
-                  </h3>
-                  <button
-                    onClick={() => archivePlant(plant.plantId)}
-                    className="flex items-center gap-1.5 px-2 py-1 rounded text-[var(--text-tertiary)] hover:text-[var(--bordeaux)] hover:bg-[var(--vellum)] transition-colors cursor-pointer"
-                    aria-label={`Archive ${plant.customName || plant.plantName}`}
-                  >
-                    <Archive size={14} strokeWidth={1.5} />
-                    <span className="font-[family-name:var(--font-body)] text-[12px]">Archive</span>
-                  </button>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  {plant.allTasks.map((task) => (
-                    <div
-                      key={task.completionKey}
-                      className={[
-                        'flex items-start gap-3 py-2 px-2 rounded-[var(--radius-md)]',
-                        task.completed ? 'opacity-60' : '',
-                      ].join(' ')}
-                    >
-                      {/* Checkbox */}
-                      <button
-                        onClick={() => {
-                          if (!task.completed) {
-                            completeTask(plant.plantId, task.completionKey);
-                          }
-                        }}
-                        disabled={task.completed || completingTask === task.completionKey}
-                        className={[
-                          'flex-shrink-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center mt-0.5 cursor-pointer',
-                          task.completed
-                            ? 'bg-[var(--forest)] border-[var(--forest)]'
-                            : 'border-[var(--hairline)] hover:border-[var(--forest)]',
-                          completingTask === task.completionKey ? 'animate-pulse' : '',
-                        ].join(' ')}
-                        aria-label={task.completed ? 'Completed' : `Complete ${task.title}`}
-                      >
-                        {task.completed && (
-                          <Check size={12} strokeWidth={3} className="text-white" />
-                        )}
-                      </button>
-
-                      {/* Task info */}
-                      <div className="flex-1 min-w-0">
-                        <span className={[
-                          'font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)]',
-                          task.completed ? 'line-through' : '',
-                        ].join(' ')}>
-                          {task.title}
-                        </span>
-                        <div>
-                          <span className="font-[family-name:var(--font-body)] text-[12px] text-[var(--text-tertiary)]">
-                            {formatTaskDate(task.date)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
         </div>
       )}
 

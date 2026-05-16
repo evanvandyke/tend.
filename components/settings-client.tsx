@@ -28,6 +28,51 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
   const [isPending, startTransition] = useTransition();
   const [subscribing, setSubscribing] = useState(false);
 
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(false);
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+    if (newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPasswordError(data.error || 'Failed to change password');
+      } else {
+        setPasswordSuccess(true);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch {
+      setPasswordError('Network error. Please try again.');
+    } finally {
+      setChangingPassword(false);
+    }
+  }
+
   async function handlePushToggle(enabled: boolean) {
     setPushEnabled(enabled);
     startTransition(async () => {
@@ -190,6 +235,71 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
           Sign Out
         </button>
       </div>
+
+      {/* Change Password Section */}
+      <SectionHeader title="Change Password" />
+
+      <form onSubmit={handleChangePassword} className="space-y-3 mt-2">
+        <div className="py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)] space-y-3">
+          <div>
+            <label className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] block mb-1">
+              Current Password
+            </label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-[var(--hairline)] bg-white font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)] focus:outline-none focus:border-[var(--forest)]"
+              required
+            />
+          </div>
+          <div>
+            <label className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] block mb-1">
+              New Password
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-[var(--hairline)] bg-white font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)] focus:outline-none focus:border-[var(--forest)]"
+              required
+              minLength={8}
+            />
+          </div>
+          <div>
+            <label className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] block mb-1">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-[var(--hairline)] bg-white font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)] focus:outline-none focus:border-[var(--forest)]"
+              required
+              minLength={8}
+            />
+          </div>
+
+          {passwordError && (
+            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--bordeaux)]">
+              {passwordError}
+            </p>
+          )}
+          {passwordSuccess && (
+            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sage)]">
+              Password changed successfully.
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={changingPassword}
+            className="w-full font-[family-name:var(--font-display)] text-[13px] font-semibold uppercase tracking-[0.1em] text-white bg-[var(--forest)] px-4 py-2.5 rounded-md disabled:opacity-50 transition-opacity"
+          >
+            {changingPassword ? 'Changing...' : 'Change Password'}
+          </button>
+        </div>
+      </form>
     </main>
   );
 }

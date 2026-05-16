@@ -138,15 +138,15 @@ function QuickAddSheet({ open, onClose, onAdd }: QuickAddSheetProps) {
             <span className="font-[family-name:var(--font-display)] text-[14px] font-semibold text-[var(--iron-gall)]">
               Kind
             </span>
-            <div className="flex gap-[8px] flex-wrap">
+            <div className="flex gap-[6px]">
               {moduleOptions.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setModule(opt.value)}
                   className={[
-                    'px-[12px] py-[8px] rounded-[var(--radius-sm)] min-h-[44px]',
-                    'font-[family-name:var(--font-display)] text-[13px] font-semibold uppercase tracking-[0.1em]',
+                    'px-[12px] py-[6px] rounded-[var(--radius-sm)] min-h-[36px]',
+                    'font-[family-name:var(--font-display)] text-[12px] font-semibold uppercase tracking-[0.05em]',
                     'border transition-all duration-[150ms] ease-out cursor-pointer',
                     module === opt.value
                       ? 'bg-[var(--forest)] text-[var(--vellum)] border-[var(--forest)]'

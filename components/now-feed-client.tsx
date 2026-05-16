@@ -1,13 +1,11 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
 import { ProjectCard } from '@/components/project-card';
-import { FAB } from '@/components/fab';
 import { BottomNav } from '@/components/bottom-nav';
-import { QuickAddSheet } from '@/components/quick-add-sheet';
 
 export interface ProjectData {
   id: string;
@@ -25,7 +23,6 @@ interface NowFeedClientProps {
 
 function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps) {
   const router = useRouter();
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   const handleToggle = useCallback(async (id: string, type: NowFeedItemData['type']) => {
     try {
@@ -104,13 +101,7 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
         )}
       </main>
 
-      <FAB onClick={() => setQuickAddOpen(true)} />
       <BottomNav />
-      <QuickAddSheet
-        open={quickAddOpen}
-        onClose={() => setQuickAddOpen(false)}
-        onAdd={() => router.refresh()}
-      />
     </>
   );
 }

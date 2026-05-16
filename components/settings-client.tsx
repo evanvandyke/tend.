@@ -100,37 +100,39 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
       <SectionHeader title="Notifications" />
 
       <div className="space-y-3 mt-2">
-        {/* Push toggle */}
-        <div className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)]">
-          <div>
-            <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--iron-gall)]">
-              Push Notifications
-            </p>
-            <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--sepia)] mt-0.5">
-              Frost warnings, lunar events, task reminders
-            </p>
+        {/* If subscribed: show toggle to control preference */}
+        {isSupported && isSubscribed && (
+          <div className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)]">
+            <div>
+              <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--iron-gall)]">
+                Push Notifications
+              </p>
+              <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--sepia)] mt-0.5">
+                Frost warnings, lunar events, task reminders
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                role="switch"
+                aria-checked={pushEnabled}
+                className="sr-only peer"
+                checked={pushEnabled}
+                onChange={(e) => handlePushToggle(e.target.checked)}
+                disabled={isPending}
+              />
+              <div className="w-[44px] h-[24px] bg-[var(--hairline)] peer-checked:bg-[var(--bordeaux)] rounded-full transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[20px] after:w-[20px] after:transition-transform peer-checked:after:translate-x-[22px]" />
+            </label>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              role="switch"
-              aria-checked={pushEnabled}
-              className="sr-only peer"
-              checked={pushEnabled}
-              onChange={(e) => handlePushToggle(e.target.checked)}
-              disabled={isPending}
-            />
-            <div className="w-[44px] h-[24px] bg-[var(--hairline)] peer-checked:bg-[var(--bordeaux)] rounded-full transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[20px] after:w-[20px] after:transition-transform peer-checked:after:translate-x-[22px]" />
-          </label>
-        </div>
+        )}
 
-        {/* Subscription status */}
+        {/* If not subscribed: show enable button */}
         {isSupported && !isSubscribed && (
           <div className="py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)]">
             <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] mb-2">
               {permission === 'denied'
                 ? 'Push notifications are blocked. Please enable them in your browser settings.'
-                : 'Enable push notifications on this device to receive alerts.'}
+                : 'Get frost warnings, lunar events, and task reminders sent to this device.'}
             </p>
             {permission !== 'denied' && (
               <button
@@ -141,14 +143,6 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
                 {subscribing ? 'Subscribing...' : 'Enable Push Notifications'}
               </button>
             )}
-          </div>
-        )}
-
-        {isSupported && isSubscribed && (
-          <div className="py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)]">
-            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sage)]">
-              ✓ Push notifications active on this device
-            </p>
           </div>
         )}
 

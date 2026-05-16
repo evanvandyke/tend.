@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
 import { ProjectCard } from '@/components/project-card';
-import { BottomNav } from '@/components/bottom-nav';
 import { SeasonalBanner } from '@/components/seasonal-banner';
 
 export interface ProjectData {
@@ -146,7 +145,6 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
         )}
       </main>
 
-      <BottomNav />
     </>
   );
 }

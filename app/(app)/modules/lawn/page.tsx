@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { TopBar } from '@/components/top-bar';
-import { BottomNav } from '@/components/bottom-nav';
 import { LawnDetail } from '@/components/lawn-detail';
 import { getModule } from '@/lib/modules';
 
@@ -40,7 +39,6 @@ export default async function LawnModulePage() {
       <main className="flex-1 pb-20">
         <LawnDetail tasksByMonth={serializedTasksByMonth} />
       </main>
-      <BottomNav />
     </>
   );
 }

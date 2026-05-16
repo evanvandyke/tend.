@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, BookOpen, Hammer, Settings } from 'lucide-react';
+import { CalendarDays, BookOpen, Hammer, Leaf, Settings } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { label: 'Now', href: '/now', icon: CalendarDays },
   { label: 'Browse', href: '/browse', icon: BookOpen },
   { label: 'Projects', href: '/projects', icon: Hammer },
+  { label: 'Modules', href: '/modules', icon: Leaf },
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -48,13 +49,13 @@ function BottomNav({ className = '' }: { className?: string }) {
             ].join(' ')}
           >
             <Icon
-              size={24}
+              size={20}
               strokeWidth={1.5}
               className={isActive ? 'text-[var(--forest)]' : 'text-[var(--text-tertiary)]'}
             />
             <span
               className={[
-                'font-[family-name:var(--font-display)] text-[10px] font-semibold uppercase tracking-[0.1em]',
+                'font-[family-name:var(--font-display)] text-[9px] font-semibold uppercase tracking-[0.1em]',
                 isActive ? 'text-[var(--iron-gall)]' : 'text-[var(--text-tertiary)]',
               ].join(' ')}
             >

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TopBar } from '@/components/top-bar';
-import { BottomNav } from '@/components/bottom-nav';
 import { SectionHeader } from '@/components/section-header';
 import { ProjectCard } from '@/components/project-card';
 import { FAB } from '@/components/fab';
@@ -108,7 +107,6 @@ export function ProjectsPageClient({
       </main>
 
       <FAB onClick={() => setShowForm(true)} />
-      <BottomNav />
       <ProjectFormSheet
         open={showForm}
         onClose={() => setShowForm(false)}

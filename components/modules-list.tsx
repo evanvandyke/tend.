@@ -75,7 +75,7 @@ function ModulesList() {
         return (
           <div
             key={mod.slug}
-            className="bg-[var(--vellum)] border border-[var(--hairline)] rounded-[var(--radius-md)] p-4 shadow-[var(--shadow-1)]"
+            className="bg-[var(--vellum)] border border-[var(--hairline)] rounded-[var(--radius-md)] p-4 shadow-[var(--shadow-1)] transition-all duration-150 hover:border-[var(--engraved)] hover:shadow-[var(--shadow-2)] hover:-translate-y-[1px]"
           >
             <div className="flex items-start justify-between">
               <Link href={href} className="flex items-start gap-3 flex-1 min-w-0">
@@ -104,6 +104,7 @@ function ModulesList() {
               <button
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   toggleModule(mod.slug, !mod.enabled);
                 }}
                 className="ml-3 mt-1 relative w-[44px] h-[24px] rounded-full transition-colors duration-200 cursor-pointer"

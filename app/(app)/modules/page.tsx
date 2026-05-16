@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { TopBar } from '@/components/top-bar';
-import { BottomNav } from '@/components/bottom-nav';
 import { ModulesList } from '@/components/modules-list';
 
 export default async function ModulesPage() {
@@ -22,7 +21,6 @@ export default async function ModulesPage() {
         </div>
         <ModulesList />
       </main>
-      <BottomNav />
     </>
   );
 }

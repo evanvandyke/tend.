@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { MonthSelector } from '@/components/month-selector';
 import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
-import { BottomNav } from '@/components/bottom-nav';
 import { startOfWeek, format } from 'date-fns';
 
 const MONTH_NAMES = [
@@ -153,7 +152,6 @@ function BrowseClient({ initialMonth, initialYear, initialItems }: BrowseClientP
         ))}
       </main>
 
-      <BottomNav />
     </>
   );
 }

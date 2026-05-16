@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { TopBar } from '@/components/top-bar';
-import { BottomNav } from '@/components/bottom-nav';
 import { GardenDetail } from '@/components/garden-detail';
 import { PLANT_CATALOG } from '@/lib/modules/garden';
 
@@ -26,7 +25,6 @@ export default async function GardenModulePage() {
       <main className="flex-1 pb-20">
         <GardenDetail catalog={catalog} />
       </main>
-      <BottomNav />
     </>
   );
 }

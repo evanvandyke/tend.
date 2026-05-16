@@ -1,19 +1,46 @@
 'use client';
 
 import React from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface SectionHeaderProps {
   title: string;
   className?: string;
+  collapsible?: boolean;
+  isCollapsed?: boolean;
+  itemCount?: number;
+  onToggle?: () => void;
 }
 
-function SectionHeader({ title, className = '' }: SectionHeaderProps) {
-  return (
+function SectionHeader({
+  title,
+  className = '',
+  collapsible = false,
+  isCollapsed = false,
+  itemCount,
+  onToggle,
+}: SectionHeaderProps) {
+  const headerContent = (
     <div
       className={[
         'flex items-center gap-[8px] pt-[24px] pb-[8px] pl-[16px] pr-[16px]',
+        collapsible ? 'cursor-pointer select-none' : '',
         className,
       ].join(' ')}
+      onClick={collapsible ? onToggle : undefined}
+      role={collapsible ? 'button' : undefined}
+      aria-expanded={collapsible ? !isCollapsed : undefined}
+      tabIndex={collapsible ? 0 : undefined}
+      onKeyDown={
+        collapsible
+          ? (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onToggle?.();
+              }
+            }
+          : undefined
+      }
     >
       <h2 className="font-[family-name:var(--font-display)] text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)] whitespace-nowrap">
         {title}
@@ -38,8 +65,31 @@ function SectionHeader({ title, className = '' }: SectionHeaderProps) {
         </svg>
         <span className="flex-1 h-[0.5px] bg-[var(--hairline)]" />
       </span>
+
+      {/* Item count (shown when collapsed) */}
+      {collapsible && isCollapsed && itemCount !== undefined && (
+        <span className="font-[family-name:var(--font-display)] text-[11px] font-semibold text-[#9C8E70] whitespace-nowrap">
+          {itemCount}
+        </span>
+      )}
+
+      {/* Chevron indicator */}
+      {collapsible && (
+        <span
+          className="shrink-0 section-header-chevron"
+          style={{
+            transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+            transition: 'transform 250ms ease-out',
+          }}
+          aria-hidden="true"
+        >
+          <ChevronDown size={14} strokeWidth={1.5} color="#9C8E70" />
+        </span>
+      )}
     </div>
   );
+
+  return headerContent;
 }
 
 export { SectionHeader };

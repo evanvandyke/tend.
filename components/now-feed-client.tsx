@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
@@ -21,8 +21,23 @@ interface NowFeedClientProps {
   openProjects: ProjectData[];
 }
 
+interface CollapsedState {
+  thisWeek: boolean;
+  comingUp: boolean;
+  openProjects: boolean;
+}
+
 function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps) {
   const router = useRouter();
+  const [collapsed, setCollapsed] = useState<CollapsedState>({
+    thisWeek: false,
+    comingUp: true,
+    openProjects: false,
+  });
+
+  const toggleSection = useCallback((section: keyof CollapsedState) => {
+    setCollapsed((prev) => ({ ...prev, [section]: !prev[section] }));
+  }, []);
 
   const handleToggle = useCallback(async (id: string, type: NowFeedItemData['type']) => {
     try {
@@ -50,37 +65,65 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
       <main className="pb-40 pt-2">
         {thisWeek.length > 0 && (
           <>
-            <SectionHeader title="This Week" />
-            {thisWeek.map((item) => (
-              <NowFeedItem key={item.id} item={item} onToggle={handleToggle} />
-            ))}
+            <SectionHeader
+              title="This Week"
+              collapsible
+              isCollapsed={collapsed.thisWeek}
+              itemCount={thisWeek.length}
+              onToggle={() => toggleSection('thisWeek')}
+            />
+            {!collapsed.thisWeek && (
+              <div className="section-content">
+                {thisWeek.map((item) => (
+                  <NowFeedItem key={item.id} item={item} onToggle={handleToggle} />
+                ))}
+              </div>
+            )}
           </>
         )}
 
         {comingUp.length > 0 && (
           <>
-            <SectionHeader title="Coming Up" />
-            {comingUp.map((item) => (
-              <NowFeedItem key={item.id} item={item} onToggle={handleToggle} />
-            ))}
+            <SectionHeader
+              title="Coming Up"
+              collapsible
+              isCollapsed={collapsed.comingUp}
+              itemCount={comingUp.length}
+              onToggle={() => toggleSection('comingUp')}
+            />
+            {!collapsed.comingUp && (
+              <div className="section-content">
+                {comingUp.map((item) => (
+                  <NowFeedItem key={item.id} item={item} onToggle={handleToggle} />
+                ))}
+              </div>
+            )}
           </>
         )}
 
         {openProjects.length > 0 && (
           <>
-            <SectionHeader title="Open Projects" />
-            <div className="px-4 flex flex-col gap-3">
-              {openProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  title={project.title}
-                  description={project.description}
-                  subtaskCount={project.subtaskCount}
-                  completedCount={project.completedCount}
-                  onClick={() => router.push(`/projects/${project.id}`)}
-                />
-              ))}
-            </div>
+            <SectionHeader
+              title="Open Projects"
+              collapsible
+              isCollapsed={collapsed.openProjects}
+              itemCount={openProjects.length}
+              onToggle={() => toggleSection('openProjects')}
+            />
+            {!collapsed.openProjects && (
+              <div className="px-4 flex flex-col gap-3 section-content">
+                {openProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    title={project.title}
+                    description={project.description}
+                    subtaskCount={project.subtaskCount}
+                    completedCount={project.completedCount}
+                    onClick={() => router.push(`/projects/${project.id}`)}
+                  />
+                ))}
+              </div>
+            )}
           </>
         )}
 

@@ -10,13 +10,17 @@ Second session. Built on the v1 foundation from Session 1 (full PWA deployed to 
 - Task completion overhaul — fixed broken API calls, added optimistic completion with 3.5s inline undo, strikethrough animation, "Done Today" section
 - "Skip This Year" for routine tasks — schema migration, action sheet (Mark Done / Skip / View Routine)
 - Renamed "Modules" → "Routines" throughout (nav, pages, settings)
-- Renamed "Browse" → "Tasks" with proper /tasks route — filterable task list (All/Active/Completed), source sub-filters, collapsible sections
+- Renamed "Browse" → "Tasks" with proper /tasks route — filterable task list (All/Active/Completed), dynamic source sub-filters from enabled modules, collapsible sections
 - Task edit sheet — tap any user task to edit title, due date, kind, or delete
 - Garden module redesign — card-based plant management with next-action badges, inline expandable task timeline with completion checkboxes
-- Now page header — season indicator moved inline with date, lunar event callout
+- Persistent header — TopBar moved to app layout, sticky, consistent across all pages
+- Weather integration — current temp + tomorrow's forecast in header via OpenWeatherMap (5-min cache, ZIP-specific)
+- Lunar event — always shows next upcoming event with date in header
 - Settings — editable name and ZIP code (affects frost date calculations)
-- Desktop polish — 720px max-width, constrained sheets/nav/FAB, sticky header
+- Desktop polish — 720px max-width, constrained sheets/nav/FAB
+- Mobile polish — bottom nav padding for iPhone rounded corners + home indicator
 - Favicon — T. mark (Forest green T, Bordeaux period, Parchment background)
+- Push notifications — confirmed working on mobile (iOS)
 - Various fixes: Bordeaux → Forest on push button, garden overdue semantics, project card subtask counts, inline undo (was floating toast covered by FAB)
 
 **Deliberately parked:**
@@ -25,12 +29,11 @@ Second session. Built on the v1 foundation from Session 1 (full PWA deployed to 
 - Swipe gestures on task rows — nice-to-have, not blocking usability
 - Email notifications via Resend — intentionally skipped in v1, push is primary
 
-**Known issues to fix next session:**
-- Garden page: can't add new plants (PlantPicker button exists but may not be fully wired)
-- Weather not yet integrated (API key exists, just needs implementation)
-- Tasks page: routine filters may be hardcoded instead of dynamic from enabled modules
-- Header persistence across page navigation (should be in layout, not per-page)
-- Lunar event callout not showing (set to 7-day window, may need to show next regardless of distance)
+**Known issues for next session:**
+- Garden page: can't add new plants (PlantPicker button/modal exists but add flow may not complete properly)
+- Routine tasks on Tasks page: dates show but need verification of accuracy
+- Another session is building an onboarding sequence — may see new commits from that work
+- Push notification content/timing needs real-world verification (cron runs 7am MST daily)
 
 ---
 

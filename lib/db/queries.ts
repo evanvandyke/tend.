@@ -691,6 +691,13 @@ export async function getRoutineTasks(userId: string): Promise<RoutineTaskItem[]
 
       const source: 'lawn' | 'garden' = moduleSlug.startsWith('lawn') ? 'lawn' : 'lawn';
 
+      // Derive dueAt from windowEnd if available
+      let dueAt: string | undefined;
+      if (task.windowEnd) {
+        const endDate = new Date(currentYear, task.windowEnd.month - 1, task.windowEnd.day);
+        dueAt = endDate.toISOString();
+      }
+
       items.push({
         id: `module-${moduleSlug}-${task.slug}`,
         title: task.title,
@@ -699,6 +706,7 @@ export async function getRoutineTasks(userId: string): Promise<RoutineTaskItem[]
         moduleSlug,
         taskSlug: task.slug,
         isCompleted: completed,
+        dueAt,
       });
     }
   }

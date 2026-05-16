@@ -29,6 +29,11 @@ export interface WeatherInfo {
   temp: number;
   condition: string;
   icon: string;
+  tomorrow?: {
+    high: number;
+    condition: string;
+    icon: string;
+  };
 }
 
 interface TopBarProps {
@@ -62,6 +67,9 @@ function TopBar({ lunarEvent, weather }: TopBarProps) {
           {weather && (
             <div className="mt-0.5">
               {weather.icon} {weather.temp}°F
+              {weather.tomorrow && (
+                <span> · Tmrw {weather.tomorrow.high}°F {weather.tomorrow.icon}</span>
+              )}
             </div>
           )}
         </div>

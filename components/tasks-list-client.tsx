@@ -4,8 +4,10 @@ import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { TaskRow, type CompletionAnimState } from '@/components/task-row';
 import { TaskEditSheet } from '@/components/task-edit-sheet';
+import { ModuleTaskActionSheet } from '@/components/module-task-action-sheet';
 import { SectionHeader } from '@/components/section-header';
 import type { UserTaskItem, RoutineTaskItem } from '@/lib/db/queries';
+import type { NowFeedItemData } from '@/components/now-feed-item';
 
 type FilterType = 'all' | 'active' | 'completed';
 type SourceFilter = string; // 'all' | 'my-tasks' | module slug
@@ -51,6 +53,7 @@ function TasksListClient({ tasks: initialTasks, routineTasks = [], moduleSources
   ];
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [moduleActionItem, setModuleActionItem] = useState<NowFeedItemData | null>(null);
   const [animStates, setAnimStates] = useState<Record<number, CompletionAnimState>>({});
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
@@ -161,6 +164,20 @@ function TasksListClient({ tasks: initialTasks, routineTasks = [], moduleSources
     setEditingTaskId(numericId);
     setEditSheetOpen(true);
   }, []);
+
+  const handleRoutineTaskPress = useCallback((id: string) => {
+    const task = routineTasks.find((t) => t.id === id);
+    if (!task) return;
+    setModuleActionItem({
+      id: task.id,
+      type: task.source === 'garden' ? 'garden-task' : 'module-task',
+      title: task.title,
+      content: task.content,
+      moduleSource: task.source,
+      moduleSlug: task.moduleSlug,
+      taskSlug: task.taskSlug,
+    });
+  }, [routineTasks]);
 
   const handleEditClose = useCallback(() => {
     setEditSheetOpen(false);
@@ -282,7 +299,7 @@ function TasksListClient({ tasks: initialTasks, routineTasks = [], moduleSources
                   animState="idle"
                   moduleSource={task.source}
                   onToggle={() => {}}
-                  onPress={() => {}}
+                  onPress={handleRoutineTaskPress}
                 />
               ))}
             </div>
@@ -305,6 +322,17 @@ function TasksListClient({ tasks: initialTasks, routineTasks = [], moduleSources
         onClose={handleEditClose}
         onSaved={handleSaved}
         onDeleted={handleDeleted}
+      />
+
+      {/* Module task action sheet */}
+      <ModuleTaskActionSheet
+        open={moduleActionItem !== null}
+        item={moduleActionItem}
+        onClose={() => setModuleActionItem(null)}
+        onCompleted={() => {
+          setModuleActionItem(null);
+          router.refresh();
+        }}
       />
     </div>
   );

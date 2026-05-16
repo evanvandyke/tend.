@@ -27,8 +27,9 @@ function BottomNav({ className = '' }: { className?: string }) {
       aria-label="Main navigation"
       className={[
         'fixed bottom-0 left-0 right-0 z-40',
-        'h-16 bg-[var(--vellum)] border-t border-[var(--hairline)]',
-        'pb-[env(safe-area-inset-bottom)]',
+        'bg-[var(--vellum)] border-t border-[var(--hairline)]',
+        'pt-2 pb-[max(12px,env(safe-area-inset-bottom))]',
+        'px-4',
         'flex items-center justify-around max-w-[720px] mx-auto',
         className,
       ].join(' ')}

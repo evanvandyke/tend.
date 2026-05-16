@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { lunarEvents, users, userTasks, userModules, userModuleCompletions } from './schema';
-import { gte, lte, asc, and, eq, or, isNull } from 'drizzle-orm';
+import { gte, lte, asc, and, eq, or, isNull, ne, desc } from 'drizzle-orm';
 import { addDays, differenceInDays, startOfDay, startOfMonth, endOfMonth } from 'date-fns';
 import { getModule, isInWindow } from '@/lib/modules';
 import { computeGardenTasks } from '@/lib/modules/garden';
@@ -592,4 +592,44 @@ async function computeGardenTasksForMonth(
 
   tasks.sort((a, b) => a.date.getTime() - b.date.getTime());
   return tasks;
+}
+
+// === All User Tasks (for Tasks page) ===
+
+export type UserTaskItem = {
+  id: number;
+  kind: string;
+  status: string;
+  title: string;
+  dueAt: string | null;
+  completedAt: string | null;
+};
+
+export async function getAllUserTasks(userId: string): Promise<UserTaskItem[]> {
+  const tasks = await db
+    .select({
+      id: userTasks.id,
+      kind: userTasks.kind,
+      status: userTasks.status,
+      title: userTasks.title,
+      dueAt: userTasks.dueAt,
+      completedAt: userTasks.completedAt,
+    })
+    .from(userTasks)
+    .where(
+      and(
+        eq(userTasks.userId, userId),
+        ne(userTasks.status, 'archived')
+      )
+    )
+    .orderBy(desc(userTasks.createdAt));
+
+  return tasks.map((t) => ({
+    id: t.id,
+    kind: t.kind,
+    status: t.status,
+    title: t.title,
+    dueAt: t.dueAt ? t.dueAt.toISOString() : null,
+    completedAt: t.completedAt ? t.completedAt.toISOString() : null,
+  }));
 }

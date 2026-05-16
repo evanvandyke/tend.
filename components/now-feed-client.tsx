@@ -62,7 +62,7 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
 
   return (
     <>
-      <main className="pb-40 pt-2">
+      <main className="relative pb-40 pt-2">
         <SeasonalBanner />
         {thisWeek.length > 0 && (
           <>

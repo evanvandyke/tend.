@@ -25,24 +25,21 @@ export function SeasonalBanner() {
   const season = getCurrentSeason();
 
   return (
-    <div className="mx-4 mt-2 mb-0">
-      <div
-        className="relative w-full overflow-hidden"
+    <div
+      className="absolute top-0 left-0 right-0 h-[300px] overflow-hidden pointer-events-none"
+      aria-hidden="true"
+    >
+      <Image
+        src={`/images/seasons/${season}.png`}
+        alt={ALT_TEXT[season]}
+        width={1774}
+        height={887}
+        priority
+        className="w-full h-full object-cover"
         style={{
-          borderRadius: '4px',
-          boxShadow: 'var(--shadow-1, 0 1px 3px rgba(0,0,0,0.08))',
-          border: '1px solid var(--border-hairline, rgba(0,0,0,0.06))',
+          filter: 'grayscale(60%) opacity(0.12) blur(1px)',
         }}
-      >
-        <Image
-          src={`/images/seasons/${season}.png`}
-          alt={ALT_TEXT[season]}
-          width={1774}
-          height={887}
-          priority
-          className="w-full h-auto block"
-        />
-      </div>
+      />
     </div>
   );
 }

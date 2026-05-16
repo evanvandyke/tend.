@@ -2,9 +2,9 @@ import { Module } from './types';
 
 export const lawnUtahModule: Module = {
   slug: 'lawn-utah',
-  name: 'Lawn Care — Northern Utah',
+  name: 'Lawn Care',
   description: 'Complete cool-season lawn care schedule for Northern Utah (zones 5b–6b). Covers fertilization, mowing, watering, aeration, overseeding, and winterization.',
-  region: 'northern-utah',
+  region: 'Northern Utah',
   tasks: [
     // === MARCH ===
     {

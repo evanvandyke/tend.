@@ -88,6 +88,11 @@ function ModulesList() {
                     <h3 className="font-[family-name:var(--font-display)] text-[16px] font-semibold text-[var(--iron-gall)]">
                       {mod.name}
                     </h3>
+                    {mod.region && (
+                      <span className="font-[family-name:var(--font-body)] text-[12px] text-[var(--sepia)]">
+                        · {mod.region}
+                      </span>
+                    )}
                   </div>
                   <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] mt-1 line-clamp-2">
                     {mod.description}

@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { TopBar } from '@/components/top-bar';
 import { NowFeedClient, type ProjectData } from '@/components/now-feed-client';
 import type { NowFeedItemData } from '@/components/now-feed-item';
-import { getNowFeed, type FeedItem } from '@/lib/db/queries';
+import { getNowFeed, getCompletedToday, type FeedItem } from '@/lib/db/queries';
 
 function toISODateString(date?: Date | string): string | undefined {
   if (!date) return undefined;
@@ -24,6 +24,8 @@ function feedItemToClientData(item: FeedItem): NowFeedItemData {
     isCompleted: item.isCompleted,
     moduleSource: item.moduleTag === 'lunar-event' ? undefined : item.moduleTag,
     eventDate: item.type === 'lunar-event' && dueAt ? format(dueAt, 'MMM d') : undefined,
+    moduleSlug: item.moduleSlug,
+    taskSlug: item.taskSlug,
   };
 }
 
@@ -34,7 +36,10 @@ export default async function NowPage() {
     redirect('/sign-in');
   }
 
-  const feed = await getNowFeed(session.user.id);
+  const [feed, completedToday] = await Promise.all([
+    getNowFeed(session.user.id),
+    getCompletedToday(session.user.id),
+  ]);
 
   const thisWeek: NowFeedItemData[] = feed.thisWeek.map(feedItemToClientData);
   const comingUp: NowFeedItemData[] = feed.comingUp.map(feedItemToClientData);
@@ -43,6 +48,7 @@ export default async function NowPage() {
     title: p.title,
     description: p.content,
   }));
+  const doneToday: NowFeedItemData[] = completedToday.map(feedItemToClientData);
 
   return (
     <>
@@ -51,6 +57,7 @@ export default async function NowPage() {
         thisWeek={thisWeek}
         comingUp={comingUp}
         openProjects={openProjects}
+        doneToday={doneToday}
       />
     </>
   );

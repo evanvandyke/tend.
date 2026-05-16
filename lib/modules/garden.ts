@@ -315,10 +315,11 @@ export async function computeGardenTasks(
         addDays(lastSpringFrost, taskTemplate.daysRelativeToFrost)
       );
 
-      // Show tasks that are overdue or within 14 days
+      // Show tasks within a reasonable window: up to 30 days past through 14 days ahead.
+      // Beyond 30 days past, the task is no longer actionable (season moved on).
       const daysUntil = differenceInDays(taskDate, todayStart);
-      if (daysUntil > 14) continue; // too far out
-      // No lower bound — overdue tasks always show
+      if (daysUntil > 14) continue;
+      if (daysUntil < -30) continue;
 
       tasks.push({
         source: 'garden',

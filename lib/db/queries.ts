@@ -225,6 +225,9 @@ export async function getNowFeed(userId: string): Promise<NowFeedResult> {
     for (const gt of gardenTasks) {
       const daysUntil = differenceInDays(gt.date, today);
 
+      // For garden tasks whose computed date has passed, don't set dueAt —
+      // they're still actionable ("do now"), not overdue. Being in "This Week"
+      // already communicates urgency. Only show the date for future tasks.
       const item: FeedItem = {
         id: `garden-${gt.plantSlug}-${gt.taskSlug}`,
         type: 'garden-task',
@@ -232,7 +235,7 @@ export async function getNowFeed(userId: string): Promise<NowFeedResult> {
         content: gt.content,
         source: 'garden',
         moduleTag: 'garden',
-        dueAt: gt.date,
+        dueAt: daysUntil >= 0 ? gt.date : undefined,
         isCompleted: false,
         plantName: gt.customName ?? gt.plantName,
         moduleSlug: 'garden',
@@ -278,6 +281,75 @@ export async function getNowFeed(userId: string): Promise<NowFeedResult> {
   openProjects.sort(sortByDueAtNullsLast);
 
   return { thisWeek, comingUp, openProjects };
+}
+
+// === Completed Today ===
+
+export async function getCompletedToday(userId: string): Promise<FeedItem[]> {
+  const today = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+  const items: FeedItem[] = [];
+
+  // 1. User tasks completed today
+  const completedUserTasks = await db
+    .select()
+    .from(userTasks)
+    .where(
+      and(
+        eq(userTasks.userId, userId),
+        eq(userTasks.status, 'done'),
+        gte(userTasks.completedAt, today),
+        lte(userTasks.completedAt, tomorrow)
+      )
+    )
+    .orderBy(asc(userTasks.completedAt));
+
+  for (const task of completedUserTasks) {
+    items.push({
+      id: `user-task-${task.id}`,
+      type: 'user-task',
+      title: task.title,
+      content: task.content ?? undefined,
+      moduleTag: task.kind === 'project' ? 'project' : 'task',
+      dueAt: task.dueAt ?? undefined,
+      isCompleted: true,
+      taskId: task.id,
+      kind: task.kind,
+    });
+  }
+
+  // 2. Module completions from today
+  const todayCompletions = await db
+    .select()
+    .from(userModuleCompletions)
+    .where(
+      and(
+        eq(userModuleCompletions.userId, userId),
+        gte(userModuleCompletions.completedAt, today),
+        lte(userModuleCompletions.completedAt, tomorrow)
+      )
+    );
+
+  for (const completion of todayCompletions) {
+    const mod = getModule(completion.moduleSlug);
+    const task = mod?.tasks.find((t) => t.slug === completion.taskSlug);
+    const title = task?.title ?? completion.taskSlug;
+    const moduleTag: FeedItem['moduleTag'] = completion.moduleSlug.startsWith('lawn') ? 'lawn' :
+      completion.moduleSlug === 'garden' ? 'garden' : 'task';
+
+    items.push({
+      id: `module-${completion.moduleSlug}-${completion.taskSlug}`,
+      type: 'module-task',
+      title,
+      source: completion.moduleSlug,
+      moduleTag,
+      isCompleted: true,
+      moduleSlug: completion.moduleSlug,
+      taskSlug: completion.taskSlug,
+    });
+  }
+
+  return items;
 }
 
 // === Browse Feed ===

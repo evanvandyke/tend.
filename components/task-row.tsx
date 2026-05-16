@@ -4,18 +4,20 @@ import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ModuleTag, type ModuleType } from '@/components/module-tag';
 
+export type CompletionAnimState = 'idle' | 'completing' | 'completed' | 'collapsing';
+
 interface TaskRowProps {
   id: string;
   title: string;
   dueDate?: string;
   moduleSource?: ModuleType;
   isCompleted: boolean;
+  animState?: CompletionAnimState;
   onToggle: (id: string) => void;
   onPress?: (id: string) => void;
 }
 
 function toDateString(date: Date): string {
-  // Return YYYY-MM-DD in local timezone
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -23,10 +25,7 @@ function toDateString(date: Date): string {
 }
 
 function getDueDateDisplay(dueDate: string): { text: string; className: string } {
-  // Extract date-only portion to avoid timezone shifting.
-  // If dueDate is ISO (e.g. "2026-05-16T00:00:00Z"), take the first 10 chars.
-  // If it's already "2026-05-16", use as-is.
-  const dueDateOnly = dueDate.slice(0, 10); // "YYYY-MM-DD"
+  const dueDateOnly = dueDate.slice(0, 10);
 
   const now = new Date();
   const todayStr = toDateString(now);
@@ -42,7 +41,6 @@ function getDueDateDisplay(dueDate: string): { text: string; className: string }
   if (dueDateOnly < todayStr) {
     return { text: 'Overdue', className: 'text-[var(--bordeaux)] font-medium' };
   }
-  // Parse for display purposes using local date parts to avoid shift
   const [year, month, day] = dueDateOnly.split('-').map(Number);
   const displayDate = new Date(year, month - 1, day);
   return {
@@ -51,18 +49,23 @@ function getDueDateDisplay(dueDate: string): { text: string; className: string }
   };
 }
 
-function TaskRow({ id, title, dueDate, moduleSource, isCompleted, onToggle, onPress }: TaskRowProps) {
+function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'idle', onToggle, onPress }: TaskRowProps) {
   const hasMetadata = dueDate || moduleSource;
   const dueDateInfo = dueDate ? getDueDateDisplay(dueDate) : null;
+
+  const isAnimatingComplete = animState === 'completing' || animState === 'completed';
+  const isCollapsing = animState === 'collapsing';
 
   return (
     <div
       className={[
-        'relative flex items-center min-h-[60px] px-[16px]',
+        'relative flex items-center min-h-[60px] px-[16px] overflow-hidden',
         'transition-colors duration-[80ms] ease-out',
         'hover:bg-[var(--aged-paper)] active:bg-[var(--aged-paper)]',
         'cursor-pointer',
+        isCollapsing ? 'task-row-collapsing' : '',
       ].join(' ')}
+      style={isCollapsing ? { animationDuration: '250ms', animationFillMode: 'forwards' } : undefined}
       onClick={() => onPress?.(id)}
       role="button"
       tabIndex={0}
@@ -75,7 +78,7 @@ function TaskRow({ id, title, dueDate, moduleSource, isCompleted, onToggle, onPr
     >
       <div onClick={(e) => e.stopPropagation()}>
         <Checkbox
-          checked={isCompleted}
+          checked={isCompleted || isAnimatingComplete}
           onChange={() => onToggle(id)}
           aria-label={`Mark "${title}" as ${isCompleted ? 'incomplete' : 'complete'}`}
         />
@@ -85,10 +88,12 @@ function TaskRow({ id, title, dueDate, moduleSource, isCompleted, onToggle, onPr
         <span
           className={[
             'font-[family-name:var(--font-body)] text-[16px]',
-            isCompleted
+            'transition-all duration-[250ms] ease-out',
+            (isCompleted || isAnimatingComplete)
               ? 'line-through text-[var(--text-tertiary)] opacity-60'
               : 'text-[var(--iron-gall)]',
           ].join(' ')}
+          style={isAnimatingComplete ? { transitionDelay: '80ms' } : undefined}
         >
           {title}
         </span>

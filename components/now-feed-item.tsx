@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Moon } from 'lucide-react';
-import { TaskRow } from '@/components/task-row';
+import { TaskRow, type CompletionAnimState } from '@/components/task-row';
 import { ModuleTag } from '@/components/module-tag';
 
 export type NowFeedItemType =
@@ -19,14 +19,18 @@ export interface NowFeedItemData {
   isCompleted?: boolean;
   moduleSource?: 'lawn' | 'garden' | 'project' | 'task';
   eventDate?: string;
+  moduleSlug?: string;
+  taskSlug?: string;
 }
 
 interface NowFeedItemProps {
   item: NowFeedItemData;
+  animState?: CompletionAnimState;
   onToggle: (id: string, type: NowFeedItemType) => void;
+  onPress?: (id: string, type: NowFeedItemType) => void;
 }
 
-function NowFeedItem({ item, onToggle }: NowFeedItemProps) {
+function NowFeedItem({ item, animState, onToggle, onPress }: NowFeedItemProps) {
   if (item.type === 'lunar-event') {
     return (
       <div className="flex items-center min-h-[60px] px-[16px] relative">
@@ -61,7 +65,9 @@ function NowFeedItem({ item, onToggle }: NowFeedItemProps) {
       dueDate={item.dueDate}
       moduleSource={moduleSource}
       isCompleted={item.isCompleted ?? false}
+      animState={animState}
       onToggle={() => onToggle(item.id, item.type)}
+      onPress={onPress ? () => onPress(item.id, item.type) : undefined}
     />
   );
 }

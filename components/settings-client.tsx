@@ -138,7 +138,7 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
               <button
                 onClick={handleSubscribe}
                 disabled={subscribing}
-                className="font-[family-name:var(--font-display)] text-[13px] font-semibold uppercase tracking-[0.1em] text-white bg-[var(--bordeaux)] px-4 py-2 rounded-md disabled:opacity-50 transition-opacity"
+                className="font-[family-name:var(--font-display)] text-[13px] font-semibold uppercase tracking-[0.1em] text-white bg-[var(--forest)] px-4 py-2 rounded-md disabled:opacity-50 transition-opacity"
               >
                 {subscribing ? 'Subscribing...' : 'Enable Push Notifications'}
               </button>

@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
 import { ProjectCard } from '@/components/project-card';
 import { SeasonalIndicator } from '@/components/seasonal-indicator';
+import { TaskEditSheet } from '@/components/task-edit-sheet';
+import type { CompletionAnimState } from '@/components/task-row';
 
 export interface ProjectData {
   id: string;
@@ -19,83 +21,201 @@ interface NowFeedClientProps {
   thisWeek: NowFeedItemData[];
   comingUp: NowFeedItemData[];
   openProjects: ProjectData[];
+  doneToday?: NowFeedItemData[];
 }
 
 interface CollapsedState {
   thisWeek: boolean;
   comingUp: boolean;
   openProjects: boolean;
+  doneToday: boolean;
 }
 
-function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps) {
+interface PendingCompletion {
+  id: string;
+  type: NowFeedItemData['type'];
+  title: string;
+  timeoutId: ReturnType<typeof setTimeout>;
+}
+
+function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: NowFeedClientProps) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState<CollapsedState>({
     thisWeek: false,
     comingUp: true,
     openProjects: false,
+    doneToday: true,
   });
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  // Track animation states per task
+  const [animStates, setAnimStates] = useState<Record<string, CompletionAnimState>>({});
+  // Track pending completions for undo
+  const [pendingCompletions, setPendingCompletions] = useState<PendingCompletion[]>([]);
+  // Track tasks that have been optimistically removed from the feed
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  // Ref to access latest pending completions in callbacks
+  const pendingRef = useRef<PendingCompletion[]>([]);
+  pendingRef.current = pendingCompletions;
 
   const toggleSection = useCallback((section: keyof CollapsedState) => {
     setCollapsed((prev) => ({ ...prev, [section]: !prev[section] }));
   }, []);
 
-  const handleToggle = useCallback(async (id: string, type: NowFeedItemData['type']) => {
+  const handleTaskPress = useCallback((id: string, type: NowFeedItemData['type']) => {
+    if (type === 'user-task') {
+      setEditingTaskId(id);
+    }
+  }, []);
+
+  const executeCompletion = useCallback(async (id: string, type: NowFeedItemData['type']) => {
     try {
       if (type === 'user-task') {
         await fetch(`/api/tasks/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ completed: true }),
+          body: JSON.stringify({ status: 'done' }),
         });
-      } else if (type === 'module-task') {
-        await fetch('/api/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ taskId: id }),
-        });
+      } else if (type === 'module-task' || type === 'garden-task') {
+        // Look up moduleSlug and taskSlug from the feed item data
+        const allItems = [...thisWeek, ...comingUp];
+        const item = allItems.find(i => i.id === id);
+
+        if (item?.moduleSlug && item?.taskSlug) {
+          const year = new Date().getFullYear();
+          await fetch('/api/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              moduleSlug: item.moduleSlug,
+              taskSlug: item.taskSlug,
+              year,
+            }),
+          });
+        }
       }
       router.refresh();
     } catch (err) {
-      console.error('Failed to toggle task:', err);
+      console.error('Failed to complete task:', err);
     }
-  }, [router]);
+  }, [router, thisWeek, comingUp]);
+
+  const handleToggle = useCallback((id: string, type: NowFeedItemData['type']) => {
+    // Don't allow completing lunar events or already-pending items
+    if (type === 'lunar-event') return;
+    if (pendingRef.current.some(p => p.id === id)) return;
+
+    // Find task title for toast
+    const allItems = [...thisWeek, ...comingUp];
+    const item = allItems.find(i => i.id === id);
+    const title = item?.title ?? 'Task';
+
+    // Start animation sequence
+    setAnimStates(prev => ({ ...prev, [id]: 'completing' }));
+
+    // After 80ms hold + 250ms animation, mark as completed
+    setTimeout(() => {
+      setAnimStates(prev => ({ ...prev, [id]: 'completed' }));
+    }, 330);
+
+    // Set up the delayed API call (3.5s undo window)
+    const timeoutId = setTimeout(() => {
+      // Start collapse animation
+      setAnimStates(prev => ({ ...prev, [id]: 'collapsing' }));
+
+      // After collapse finishes, hide the row and execute API call
+      setTimeout(() => {
+        setHiddenIds(prev => new Set([...prev, id]));
+        setAnimStates(prev => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        setPendingCompletions(prev => prev.filter(p => p.id !== id));
+        executeCompletion(id, type);
+      }, 250);
+    }, 3500);
+
+    setPendingCompletions(prev => [...prev, { id, type, title, timeoutId }]);
+  }, [thisWeek, comingUp, executeCompletion]);
+
+  const handleUndo = useCallback((id: string) => {
+    const pending = pendingRef.current.find(p => p.id === id);
+    if (!pending) return;
+
+    // Cancel the delayed API call
+    clearTimeout(pending.timeoutId);
+
+    // Revert animation state
+    setAnimStates(prev => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+
+    // Remove from pending
+    setPendingCompletions(prev => prev.filter(p => p.id !== id));
+  }, []);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      pendingRef.current.forEach(p => clearTimeout(p.timeoutId));
+    };
+  }, []);
+
+  // Filter hidden items from display
+  const visibleThisWeek = thisWeek.filter(item => !hiddenIds.has(item.id));
+  const visibleComingUp = comingUp.filter(item => !hiddenIds.has(item.id));
 
   return (
     <>
       <main className="relative pb-40 pt-2">
         <SeasonalIndicator />
-        {thisWeek.length > 0 && (
+        {visibleThisWeek.length > 0 && (
           <>
             <SectionHeader
               title="This Week"
               collapsible
               isCollapsed={collapsed.thisWeek}
-              itemCount={thisWeek.length}
+              itemCount={visibleThisWeek.length}
               onToggle={() => toggleSection('thisWeek')}
             />
             {!collapsed.thisWeek && (
               <div className="section-content">
-                {thisWeek.map((item) => (
-                  <NowFeedItem key={item.id} item={item} onToggle={handleToggle} />
+                {visibleThisWeek.map((item) => (
+                  <NowFeedItem
+                    key={item.id}
+                    item={item}
+                    animState={animStates[item.id]}
+                    onToggle={handleToggle}
+                    onPress={handleTaskPress}
+                  />
                 ))}
               </div>
             )}
           </>
         )}
 
-        {comingUp.length > 0 && (
+        {visibleComingUp.length > 0 && (
           <>
             <SectionHeader
               title="Coming Up"
               collapsible
               isCollapsed={collapsed.comingUp}
-              itemCount={comingUp.length}
+              itemCount={visibleComingUp.length}
               onToggle={() => toggleSection('comingUp')}
             />
             {!collapsed.comingUp && (
               <div className="section-content">
-                {comingUp.map((item) => (
-                  <NowFeedItem key={item.id} item={item} onToggle={handleToggle} />
+                {visibleComingUp.map((item) => (
+                  <NowFeedItem
+                    key={item.id}
+                    item={item}
+                    animState={animStates[item.id]}
+                    onToggle={handleToggle}
+                    onPress={handleTaskPress}
+                  />
                 ))}
               </div>
             )}
@@ -128,9 +248,32 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
           </>
         )}
 
-        {thisWeek.length === 0 && comingUp.length === 0 && openProjects.length === 0 && (
+        {doneToday.length > 0 && (
+          <>
+            <SectionHeader
+              title="Done Today"
+              collapsible
+              isCollapsed={collapsed.doneToday}
+              itemCount={doneToday.length}
+              onToggle={() => toggleSection('doneToday')}
+            />
+            {!collapsed.doneToday && (
+              <div className="section-content">
+                {doneToday.map((item) => (
+                  <NowFeedItem
+                    key={item.id}
+                    item={{ ...item, isCompleted: true }}
+                    onToggle={() => {}}
+                    onPress={handleTaskPress}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {visibleThisWeek.length === 0 && visibleComingUp.length === 0 && openProjects.length === 0 && (
           <div className="flex flex-col items-center justify-center pt-24 px-6 text-center">
-            {/* Botanical flourish */}
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 opacity-40">
               <path d="M24 8c0 8-6 14-14 16 8 2 14 8 14 16 0-8 6-14 14-16-8-2-14-8-14-16z" stroke="var(--text-tertiary)" strokeWidth="1" fill="none"/>
               <path d="M24 14c0 5-3.5 9-8 10.5 4.5 1.5 8 5.5 8 10.5 0-5 3.5-9 8-10.5-4.5-1.5-8-5.5-8-10.5z" stroke="var(--text-tertiary)" strokeWidth="0.5" fill="none"/>
@@ -145,7 +288,65 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
         )}
       </main>
 
+      {/* Undo Toast */}
+      {pendingCompletions.length > 0 && (
+        <UndoToast
+          pending={pendingCompletions[pendingCompletions.length - 1]}
+          onUndo={handleUndo}
+        />
+      )}
+
+      <TaskEditSheet
+        open={editingTaskId !== null}
+        taskId={editingTaskId}
+        onClose={() => setEditingTaskId(null)}
+        onSaved={() => router.refresh()}
+        onDeleted={() => router.refresh()}
+      />
     </>
+  );
+}
+
+// === Undo Toast Component ===
+
+interface UndoToastProps {
+  pending: PendingCompletion;
+  onUndo: (id: string) => void;
+}
+
+function UndoToast({ pending, onUndo }: UndoToastProps) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger entrance animation on next frame
+    const raf = requestAnimationFrame(() => setIsVisible(true));
+    return () => cancelAnimationFrame(raf);
+  }, [pending.id]);
+
+  return (
+    <div
+      className={[
+        'fixed left-1/2 -translate-x-1/2 bottom-[88px] z-50',
+        'max-w-[320px] w-[calc(100%-32px)]',
+        'bg-[var(--aged-paper)] border border-[var(--hairline)] rounded-[var(--radius-md)]',
+        'shadow-[var(--shadow-2)]',
+        'flex items-center justify-between px-4 py-3',
+        'undo-toast',
+        isVisible ? 'undo-toast-visible' : '',
+      ].join(' ')}
+      role="alert"
+      aria-live="polite"
+    >
+      <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)] truncate mr-3">
+        Completed &ldquo;{pending.title}&rdquo;
+      </span>
+      <button
+        onClick={() => onUndo(pending.id)}
+        className="font-[family-name:var(--font-body)] text-[14px] font-semibold text-[var(--forest)] shrink-0 hover:opacity-80 transition-opacity"
+      >
+        Undo
+      </button>
+    </div>
   );
 }
 

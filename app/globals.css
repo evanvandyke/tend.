@@ -85,6 +85,51 @@ body {
   outline-offset: 2px;
 }
 
+/* Task row collapse animation */
+@keyframes task-row-collapse {
+  from {
+    max-height: 80px;
+    opacity: 0.6;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+.task-row-collapsing {
+  animation: task-row-collapse 250ms ease-out forwards;
+}
+
+/* Undo toast animations */
+@keyframes undo-toast-enter {
+  from {
+    transform: translateX(-50%) translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.undo-toast {
+  transform: translateX(-50%) translateY(16px);
+  opacity: 0;
+}
+
+.undo-toast-visible {
+  animation: undo-toast-enter 250ms ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

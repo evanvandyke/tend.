@@ -3,6 +3,8 @@
 import React, { useState, useTransition } from 'react';
 import { SectionHeader } from '@/components/section-header';
 import { usePushSubscription } from '@/lib/hooks/use-push-subscription';
+import { TextInput } from '@/components/ui/text-input';
+import { Button } from '@/components/ui/button';
 
 interface SettingsUser {
   id: string;
@@ -21,6 +23,16 @@ export function SettingsClient({ user }: SettingsClientProps) {
   const [pushEnabled, setPushEnabled] = useState(user.pushNotificationsEnabled);
   const [isPending, startTransition] = useTransition();
   const [subscribing, setSubscribing] = useState(false);
+
+  // Profile edit state
+  const [editingName, setEditingName] = useState(false);
+  const [editingZip, setEditingZip] = useState(false);
+  const [nameValue, setNameValue] = useState(user.name || '');
+  const [zipValue, setZipValue] = useState(user.locationZip || '');
+  const [displayName, setDisplayName] = useState(user.name);
+  const [displayZip, setDisplayZip] = useState(user.locationZip);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -64,6 +76,52 @@ export function SettingsClient({ user }: SettingsClientProps) {
       setPasswordError('Network error. Please try again.');
     } finally {
       setChangingPassword(false);
+    }
+  }
+
+  async function handleSaveName() {
+    setProfileError(null);
+    setSavingProfile(true);
+    try {
+      const res = await fetch('/api/settings/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nameValue }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProfileError(data.error || 'Failed to update name');
+      } else {
+        setDisplayName(data.name);
+        setEditingName(false);
+      }
+    } catch {
+      setProfileError('Network error. Please try again.');
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function handleSaveZip() {
+    setProfileError(null);
+    setSavingProfile(true);
+    try {
+      const res = await fetch('/api/settings/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationZip: zipValue }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProfileError(data.error || 'Failed to update ZIP code');
+      } else {
+        setDisplayZip(data.locationZip);
+        setEditingZip(false);
+      }
+    } catch {
+      setProfileError('Network error. Please try again.');
+    } finally {
+      setSavingProfile(false);
     }
   }
 
@@ -154,7 +212,8 @@ export function SettingsClient({ user }: SettingsClientProps) {
       <SectionHeader title="Account" />
 
       <div className="space-y-3 mt-2">
-        <div className="py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)] space-y-2">
+        <div className="py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)] space-y-3">
+          {/* Email (read-only) */}
           <div className="flex items-center justify-between">
             <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)]">
               Email
@@ -163,25 +222,115 @@ export function SettingsClient({ user }: SettingsClientProps) {
               {user.email}
             </span>
           </div>
-          {user.name && (
-            <div className="flex items-center justify-between">
-              <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)]">
-                Name
-              </span>
-              <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)]">
-                {user.name}
-              </span>
-            </div>
-          )}
-          {user.locationZip && (
-            <div className="flex items-center justify-between">
-              <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)]">
-                Location
-              </span>
-              <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)]">
-                {user.locationZip}
-              </span>
-            </div>
+
+          {/* Name (editable) */}
+          <div>
+            {editingName ? (
+              <div className="space-y-2">
+                <TextInput
+                  label="Name"
+                  value={nameValue}
+                  onChange={(e) => setNameValue(e.target.value)}
+                  placeholder="Your name"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button
+                    variant="primary"
+                    onClick={handleSaveName}
+                    disabled={savingProfile || !nameValue.trim()}
+                    className="text-[13px] px-3 py-1.5 min-h-[36px]"
+                  >
+                    {savingProfile ? 'Saving...' : 'Save'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => { setEditingName(false); setNameValue(displayName || ''); setProfileError(null); }}
+                    className="text-[13px] px-3 py-1.5 min-h-[36px]"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)]">
+                  Name
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)]">
+                    {displayName || '—'}
+                  </span>
+                  <button
+                    onClick={() => setEditingName(true)}
+                    className="font-[family-name:var(--font-body)] text-[12px] text-[var(--forest)] underline"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ZIP Code (editable) */}
+          <div>
+            {editingZip ? (
+              <div className="space-y-2">
+                <TextInput
+                  label="ZIP Code"
+                  value={zipValue}
+                  onChange={(e) => setZipValue(e.target.value)}
+                  placeholder="e.g. 84003"
+                  maxLength={5}
+                  inputMode="numeric"
+                  autoFocus
+                />
+                <p className="font-[family-name:var(--font-body)] text-[11px] text-[var(--sepia)]">
+                  Used to calculate frost dates for your garden.
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="primary"
+                    onClick={handleSaveZip}
+                    disabled={savingProfile || !/^\d{5}$/.test(zipValue)}
+                    className="text-[13px] px-3 py-1.5 min-h-[36px]"
+                  >
+                    {savingProfile ? 'Saving...' : 'Save'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => { setEditingZip(false); setZipValue(displayZip || ''); setProfileError(null); }}
+                    className="text-[13px] px-3 py-1.5 min-h-[36px]"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)]">
+                  Location
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)]">
+                    {displayZip || '—'}
+                  </span>
+                  <button
+                    onClick={() => setEditingZip(true)}
+                    className="font-[family-name:var(--font-body)] text-[12px] text-[var(--forest)] underline"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Profile error message */}
+          {profileError && (
+            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--bordeaux)]">
+              {profileError}
+            </p>
           )}
         </div>
 

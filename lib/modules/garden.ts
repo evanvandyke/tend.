@@ -340,3 +340,138 @@ export async function computeGardenTasks(
 
   return tasks;
 }
+
+// === Per-Plant Next Action Helper ===
+
+export type PlantTaskStatus = 'past-due' | 'today' | 'upcoming' | 'distant' | 'all-done';
+
+export type PlantNextAction = {
+  plantId: number;
+  plantSlug: string;
+  plantName: string;
+  customName: string | null;
+  count: number;
+  nextTask: {
+    slug: string;
+    title: string;
+    content: string;
+    date: Date;
+    daysUntil: number;
+    status: PlantTaskStatus;
+  } | null;
+  totalTasks: number;
+  completedTasks: number;
+  allTasks: {
+    slug: string;
+    title: string;
+    content: string;
+    date: Date;
+    completed: boolean;
+    completionKey: string;
+  }[];
+};
+
+export async function computePlantNextActions(
+  userId: string,
+  today: Date
+): Promise<PlantNextAction[]> {
+  // Fetch user's zip for frost dates
+  const [user] = await db
+    .select({ locationZip: users.locationZip })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user?.locationZip) return [];
+
+  const { lastSpringFrost } = getFrostDates(user.locationZip);
+  const todayStart = startOfDay(today);
+
+  // Fetch user's active garden plants
+  const plants = await db
+    .select()
+    .from(gardenPlants)
+    .where(and(eq(gardenPlants.userId, userId), eq(gardenPlants.archived, false)));
+
+  if (plants.length === 0) return [];
+
+  // Fetch completions for this year
+  const currentYear = today.getFullYear();
+  const completions = await db
+    .select()
+    .from(userModuleCompletions)
+    .where(
+      and(
+        eq(userModuleCompletions.userId, userId),
+        eq(userModuleCompletions.moduleSlug, 'garden'),
+        eq(userModuleCompletions.year, currentYear)
+      )
+    );
+
+  const completedSet = new Set(completions.map((c) => c.taskSlug));
+
+  const results: PlantNextAction[] = [];
+
+  for (const plant of plants) {
+    const definition = getPlantBySlug(plant.plantSlug);
+    if (!definition) continue;
+
+    const allTasks: PlantNextAction['allTasks'] = [];
+    let completedCount = 0;
+    let nextTask: PlantNextAction['nextTask'] = null;
+
+    for (const taskTemplate of definition.tasks) {
+      const completionKey = `${plant.id}-${taskTemplate.slug}`;
+      const taskDate = startOfDay(
+        addDays(lastSpringFrost, taskTemplate.daysRelativeToFrost)
+      );
+      const isCompleted = completedSet.has(completionKey);
+
+      allTasks.push({
+        slug: taskTemplate.slug,
+        title: taskTemplate.title,
+        content: taskTemplate.content,
+        date: taskDate,
+        completed: isCompleted,
+        completionKey,
+      });
+
+      if (isCompleted) {
+        completedCount++;
+      } else if (!nextTask) {
+        const daysUntil = differenceInDays(taskDate, todayStart);
+        let status: PlantTaskStatus;
+        if (daysUntil < 0) status = 'past-due';
+        else if (daysUntil === 0) status = 'today';
+        else if (daysUntil <= 7) status = 'upcoming';
+        else status = 'distant';
+
+        nextTask = {
+          slug: taskTemplate.slug,
+          title: taskTemplate.title,
+          content: taskTemplate.content,
+          date: taskDate,
+          daysUntil,
+          status,
+        };
+      }
+    }
+
+    // Sort allTasks by date
+    allTasks.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    results.push({
+      plantId: plant.id,
+      plantSlug: plant.plantSlug,
+      plantName: definition.name,
+      customName: plant.customName,
+      count: plant.count,
+      nextTask,
+      totalTasks: definition.tasks.length,
+      completedTasks: completedCount,
+      allTasks,
+    });
+  }
+
+  return results;
+}

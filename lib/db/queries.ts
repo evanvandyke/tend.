@@ -633,3 +633,83 @@ export async function getAllUserTasks(userId: string): Promise<UserTaskItem[]> {
     completedAt: t.completedAt ? t.completedAt.toISOString() : null,
   }));
 }
+
+// === Routine Tasks (for Tasks page) ===
+
+export type RoutineTaskItem = {
+  id: string;
+  title: string;
+  content?: string;
+  source: 'lawn' | 'garden';
+  moduleSlug: string;
+  taskSlug: string;
+  isCompleted: boolean;
+  dueAt?: string;
+};
+
+export async function getRoutineTasks(userId: string): Promise<RoutineTaskItem[]> {
+  const today = startOfDay(new Date());
+  const currentYear = today.getFullYear();
+  const enabledModuleSlugs = await getEnabledModules(userId);
+  const items: RoutineTaskItem[] = [];
+
+  // Module tasks (lawn, etc.)
+  for (const moduleSlug of enabledModuleSlugs) {
+    if (moduleSlug === 'garden') continue;
+
+    const mod = getModule(moduleSlug);
+    if (!mod) continue;
+
+    const completions = await db
+      .select({ taskSlug: userModuleCompletions.taskSlug })
+      .from(userModuleCompletions)
+      .where(
+        and(
+          eq(userModuleCompletions.userId, userId),
+          eq(userModuleCompletions.moduleSlug, moduleSlug),
+          eq(userModuleCompletions.year, currentYear)
+        )
+      );
+    const completedSlugs = new Set(completions.map((c) => c.taskSlug));
+
+    for (const task of mod.tasks) {
+      const completed = completedSlugs.has(task.slug);
+      const inWindow = isInWindow(today, task);
+
+      // Show tasks that are in-window or completed this year
+      if (!inWindow && !completed) continue;
+
+      const source: 'lawn' | 'garden' = moduleSlug.startsWith('lawn') ? 'lawn' : 'lawn';
+
+      items.push({
+        id: `module-${moduleSlug}-${task.slug}`,
+        title: task.title,
+        content: task.content,
+        source,
+        moduleSlug,
+        taskSlug: task.slug,
+        isCompleted: completed,
+      });
+    }
+  }
+
+  // Garden tasks
+  if (enabledModuleSlugs.includes('garden')) {
+    const gardenTasks = await computeGardenTasks(userId, today);
+
+    for (const gt of gardenTasks) {
+      items.push({
+        id: `garden-${gt.plantSlug}-${gt.taskSlug}`,
+        title: gt.title,
+        content: gt.content,
+        source: 'garden',
+        moduleSlug: 'garden',
+        taskSlug: gt.taskSlug,
+        isCompleted: false,
+        dueAt: gt.date.toISOString(),
+      });
+    }
+  }
+
+  return items;
+}

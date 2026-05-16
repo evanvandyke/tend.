@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
 import { ProjectCard } from '@/components/project-card';
-import { SeasonalIndicator } from '@/components/seasonal-indicator';
 import { TaskEditSheet } from '@/components/task-edit-sheet';
 import { ModuleTaskActionSheet } from '@/components/module-task-action-sheet';
 import type { CompletionAnimState } from '@/components/task-row';
@@ -177,7 +176,6 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
   return (
     <>
       <main className="relative pb-40 pt-2">
-        <SeasonalIndicator />
         {visibleThisWeek.length > 0 && (
           <>
             <SectionHeader

@@ -13,7 +13,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Now', href: '/now', icon: CalendarDays },
-  { label: 'Tasks', href: '/browse', icon: ClipboardList },
+  { label: 'Tasks', href: '/tasks', icon: ClipboardList },
   { label: 'Projects', href: '/projects', icon: Hammer },
   { label: 'Routines', href: '/modules', icon: Leaf },
   { label: 'Settings', href: '/settings', icon: Settings },

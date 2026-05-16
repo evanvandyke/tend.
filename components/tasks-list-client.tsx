@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { TaskRow, type CompletionAnimState } from '@/components/task-row';
 import { TaskEditSheet } from '@/components/task-edit-sheet';
 import { SectionHeader } from '@/components/section-header';
-import type { UserTaskItem } from '@/lib/db/queries';
+import type { UserTaskItem, RoutineTaskItem } from '@/lib/db/queries';
 
 type FilterType = 'all' | 'active' | 'completed';
+type SourceFilter = 'all' | 'my-tasks' | 'lawn' | 'garden';
 
 const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -15,11 +16,18 @@ const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
   { value: 'completed', label: 'Completed' },
 ];
 
+const SOURCE_OPTIONS: { value: SourceFilter; label: string }[] = [
+  { value: 'all', label: 'All Sources' },
+  { value: 'my-tasks', label: 'My Tasks' },
+  { value: 'lawn', label: 'Lawn' },
+  { value: 'garden', label: 'Garden' },
+];
+
 const KIND_LABELS: Record<string, string> = {
-  quick: 'Quick Tasks',
-  recurring: 'Recurring',
+  quick: 'Single Tasks',
+  recurring: 'Recurring Tasks',
   seasonal: 'Seasonal',
-  project: 'Projects',
+  project: 'Project Tasks',
   longcycle: 'Long Cycle',
 };
 
@@ -28,25 +36,52 @@ const KIND_ORDER = ['quick', 'recurring', 'seasonal', 'project', 'longcycle'];
 
 interface TasksListClientProps {
   tasks: UserTaskItem[];
+  routineTasks?: RoutineTaskItem[];
 }
 
-function TasksListClient({ tasks: initialTasks }: TasksListClientProps) {
+function TasksListClient({ tasks: initialTasks, routineTasks = [] }: TasksListClientProps) {
   const router = useRouter();
   const [filter, setFilter] = useState<FilterType>('all');
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [animStates, setAnimStates] = useState<Record<number, CompletionAnimState>>({});
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
+  const toggleSection = useCallback((section: string) => {
+    setCollapsedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  }, []);
+
+  // Filter user tasks by status
   const filteredTasks = initialTasks.filter((task) => {
-    if (filter === 'all') return true;
     if (filter === 'active') return task.status === 'active' || task.status === 'pending';
     if (filter === 'completed') return task.status === 'done';
     return true;
   });
 
-  // Group by kind
+  // Filter routine tasks by status
+  const filteredRoutineTasks = routineTasks.filter((task) => {
+    if (filter === 'active') return !task.isCompleted;
+    if (filter === 'completed') return task.isCompleted;
+    return true;
+  });
+
+  // Apply source filter
+  const shouldShowUserTasks = sourceFilter === 'all' || sourceFilter === 'my-tasks';
+  const shouldShowRoutineTasks = sourceFilter === 'all' || sourceFilter === 'lawn' || sourceFilter === 'garden';
+
+  const visibleUserTasks = shouldShowUserTasks ? filteredTasks : [];
+  const visibleRoutineTasks = shouldShowRoutineTasks
+    ? filteredRoutineTasks.filter((t) => {
+        if (sourceFilter === 'lawn') return t.source === 'lawn';
+        if (sourceFilter === 'garden') return t.source === 'garden';
+        return true;
+      })
+    : [];
+
+  // Group user tasks by kind
   const grouped = KIND_ORDER.reduce<Record<string, UserTaskItem[]>>((acc, kind) => {
-    const tasksForKind = filteredTasks.filter((t) => t.kind === kind);
+    const tasksForKind = visibleUserTasks.filter((t) => t.kind === kind);
     if (tasksForKind.length > 0) {
       acc[kind] = tasksForKind;
     }
@@ -54,7 +89,7 @@ function TasksListClient({ tasks: initialTasks }: TasksListClientProps) {
   }, {});
 
   // Handle any kinds not in KIND_ORDER
-  const ungrouped = filteredTasks.filter((t) => !KIND_ORDER.includes(t.kind));
+  const ungrouped = visibleUserTasks.filter((t) => !KIND_ORDER.includes(t.kind));
   if (ungrouped.length > 0) {
     grouped['other'] = ungrouped;
   }
@@ -138,7 +173,9 @@ function TasksListClient({ tasks: initialTasks }: TasksListClientProps) {
     router.refresh();
   }, [router]);
 
-  const hasResults = filteredTasks.length > 0;
+  const hasUserResults = Object.keys(grouped).length > 0;
+  const hasRoutineResults = visibleRoutineTasks.length > 0;
+  const hasResults = hasUserResults || hasRoutineResults;
 
   return (
     <div className="pb-24">
@@ -149,8 +186,8 @@ function TasksListClient({ tasks: initialTasks }: TasksListClientProps) {
         </h1>
       </div>
 
-      {/* Filter pills */}
-      <div className="px-4 py-3 flex gap-2 overflow-x-auto">
+      {/* Status filter pills */}
+      <div className="px-4 pt-3 pb-1 flex gap-2 overflow-x-auto">
         {FILTER_OPTIONS.map((opt) => (
           <button
             key={opt.value}
@@ -169,35 +206,88 @@ function TasksListClient({ tasks: initialTasks }: TasksListClientProps) {
         ))}
       </div>
 
+      {/* Source filter pills */}
+      <div className="px-4 pt-1 pb-3 flex gap-2 overflow-x-auto">
+        {SOURCE_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setSourceFilter(opt.value)}
+            className={[
+              'font-[family-name:var(--font-display)] text-[12px] font-semibold uppercase tracking-[0.05em]',
+              'min-h-[32px] px-[14px] py-[6px] rounded-[var(--radius-sm)]',
+              'transition-colors duration-150 whitespace-nowrap',
+              sourceFilter === opt.value
+                ? 'bg-[var(--forest)] text-[var(--vellum)]'
+                : 'bg-transparent text-[var(--text-secondary)] border border-[var(--hairline)]',
+            ].join(' ')}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       {/* Task list */}
       {hasResults ? (
-        Object.entries(grouped).map(([kind, tasks]) => (
-          <div key={kind}>
-            <SectionHeader title={KIND_LABELS[kind] || kind} />
-            {tasks.map((task) => (
-              <TaskRow
-                key={task.id}
-                id={`user-task-${task.id}`}
-                title={task.title}
-                dueDate={task.dueAt ?? undefined}
-                isCompleted={task.status === 'done'}
-                animState={animStates[task.id] ?? 'idle'}
-                moduleSource={task.kind === 'project' ? 'project' : 'task'}
-                onToggle={handleToggle}
-                onPress={handlePress}
-                onUndo={handleUndo}
+        <>
+          {/* User task sections */}
+          {Object.entries(grouped).map(([kind, tasks]) => (
+            <div key={kind}>
+              <SectionHeader
+                title={KIND_LABELS[kind] || kind}
+                collapsible
+                isCollapsed={collapsedSections[kind] ?? false}
+                itemCount={tasks.length}
+                onToggle={() => toggleSection(kind)}
               />
-            ))}
-          </div>
-        ))
+              {!collapsedSections[kind] && tasks.map((task) => (
+                <TaskRow
+                  key={task.id}
+                  id={`user-task-${task.id}`}
+                  title={task.title}
+                  dueDate={task.dueAt ?? undefined}
+                  isCompleted={task.status === 'done'}
+                  animState={animStates[task.id] ?? 'idle'}
+                  moduleSource={task.kind === 'project' ? 'project' : 'task'}
+                  onToggle={handleToggle}
+                  onPress={handlePress}
+                  onUndo={handleUndo}
+                />
+              ))}
+            </div>
+          ))}
+
+          {/* Routine tasks section */}
+          {hasRoutineResults && (
+            <div>
+              <SectionHeader
+                title="Routine Tasks"
+                collapsible
+                isCollapsed={collapsedSections['routine'] ?? false}
+                itemCount={visibleRoutineTasks.length}
+                onToggle={() => toggleSection('routine')}
+              />
+              {!collapsedSections['routine'] && visibleRoutineTasks.map((task) => (
+                <TaskRow
+                  key={task.id}
+                  id={task.id}
+                  title={task.title}
+                  dueDate={task.dueAt}
+                  isCompleted={task.isCompleted}
+                  animState="idle"
+                  moduleSource={task.source}
+                  onToggle={() => {}}
+                  onPress={() => {}}
+                />
+              ))}
+            </div>
+          )}
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 px-4">
           <p className="font-[family-name:var(--font-body)] text-[16px] text-[var(--text-secondary)] text-center">
-            {filter === 'all'
+            {filter === 'all' && sourceFilter === 'all'
               ? 'No tasks yet. Add one from the Now page!'
-              : filter === 'active'
-                ? 'No active tasks.'
-                : 'No completed tasks.'}
+              : 'No tasks match the current filters.'}
           </p>
         </div>
       )}

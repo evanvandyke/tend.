@@ -196,6 +196,7 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
                     animState={animStates[item.id]}
                     onToggle={handleToggle}
                     onPress={handleTaskPress}
+                    onUndo={handleUndo}
                   />
                 ))}
               </div>
@@ -221,6 +222,7 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
                     animState={animStates[item.id]}
                     onToggle={handleToggle}
                     onPress={handleTaskPress}
+                    onUndo={handleUndo}
                   />
                 ))}
               </div>
@@ -294,14 +296,6 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
         )}
       </main>
 
-      {/* Undo Toast */}
-      {pendingCompletions.length > 0 && (
-        <UndoToast
-          pending={pendingCompletions[pendingCompletions.length - 1]}
-          onUndo={handleUndo}
-        />
-      )}
-
       <TaskEditSheet
         open={editingTaskId !== null}
         taskId={editingTaskId}
@@ -317,49 +311,6 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
         onCompleted={() => router.refresh()}
       />
     </>
-  );
-}
-
-// === Undo Toast Component ===
-
-interface UndoToastProps {
-  pending: PendingCompletion;
-  onUndo: (id: string) => void;
-}
-
-function UndoToast({ pending, onUndo }: UndoToastProps) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // Trigger entrance animation on next frame
-    const raf = requestAnimationFrame(() => setIsVisible(true));
-    return () => cancelAnimationFrame(raf);
-  }, [pending.id]);
-
-  return (
-    <div
-      className={[
-        'fixed z-50 undo-toast-position',
-        'max-w-[320px] w-[calc(100%-32px)]',
-        'bg-[var(--aged-paper)] border border-[var(--hairline)] rounded-[var(--radius-md)]',
-        'shadow-[var(--shadow-2)]',
-        'flex items-center justify-between px-4 py-3',
-        'undo-toast',
-        isVisible ? 'undo-toast-visible' : '',
-      ].join(' ')}
-      role="alert"
-      aria-live="polite"
-    >
-      <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--iron-gall)] truncate mr-3">
-        Completed &ldquo;{pending.title}&rdquo;
-      </span>
-      <button
-        onClick={() => onUndo(pending.id)}
-        className="font-[family-name:var(--font-body)] text-[14px] font-semibold text-[var(--forest)] shrink-0 hover:opacity-80 transition-opacity"
-      >
-        Undo
-      </button>
-    </div>
   );
 }
 

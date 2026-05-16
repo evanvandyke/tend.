@@ -29,9 +29,10 @@ interface NowFeedItemProps {
   animState?: CompletionAnimState;
   onToggle: (id: string, type: NowFeedItemType) => void;
   onPress?: (id: string, type: NowFeedItemType) => void;
+  onUndo?: (id: string) => void;
 }
 
-function NowFeedItem({ item, animState, onToggle, onPress }: NowFeedItemProps) {
+function NowFeedItem({ item, animState, onToggle, onPress, onUndo }: NowFeedItemProps) {
   if (item.type === 'lunar-event') {
     return (
       <div className="flex items-center min-h-[60px] px-[16px] relative">
@@ -69,6 +70,7 @@ function NowFeedItem({ item, animState, onToggle, onPress }: NowFeedItemProps) {
       animState={animState}
       onToggle={() => onToggle(item.id, item.type)}
       onPress={onPress ? () => onPress(item.id, item.type) : undefined}
+      onUndo={onUndo}
     />
   );
 }

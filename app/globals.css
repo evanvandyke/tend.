@@ -109,31 +109,6 @@ body {
   animation: task-row-collapse 250ms ease-out forwards;
 }
 
-/* Undo toast animations */
-@keyframes undo-toast-enter {
-  from {
-    transform: translateX(-50%) translateY(16px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-}
-
-.undo-toast-position {
-  left: 50%;
-  bottom: 88px;
-}
-
-.undo-toast {
-  transform: translateX(-50%) translateY(16px);
-  opacity: 0;
-}
-
-.undo-toast-visible {
-  animation: undo-toast-enter 250ms ease-out forwards;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

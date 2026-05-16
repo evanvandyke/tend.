@@ -15,6 +15,7 @@ interface TaskRowProps {
   animState?: CompletionAnimState;
   onToggle: (id: string) => void;
   onPress?: (id: string) => void;
+  onUndo?: (id: string) => void;
 }
 
 function toDateString(date: Date): string {
@@ -49,11 +50,12 @@ function getDueDateDisplay(dueDate: string): { text: string; className: string }
   };
 }
 
-function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'idle', onToggle, onPress }: TaskRowProps) {
+function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'idle', onToggle, onPress, onUndo }: TaskRowProps) {
   const hasMetadata = dueDate || moduleSource;
   const dueDateInfo = dueDate ? getDueDateDisplay(dueDate) : null;
 
   const isAnimatingComplete = animState === 'completing' || animState === 'completed';
+  const showUndo = animState === 'completed' && onUndo;
   const isCollapsing = animState === 'collapsing';
 
   return (
@@ -61,18 +63,18 @@ function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'i
       className={[
         'relative flex items-center min-h-[60px] px-[16px] overflow-hidden',
         'transition-colors duration-[80ms] ease-out',
-        'hover:bg-[var(--aged-paper)] active:bg-[var(--aged-paper)]',
+        !showUndo ? 'hover:bg-[var(--aged-paper)] active:bg-[var(--aged-paper)]' : '',
         'cursor-pointer',
         isCollapsing ? 'task-row-collapsing' : '',
       ].join(' ')}
       style={isCollapsing ? { animationDuration: '250ms', animationFillMode: 'forwards' } : undefined}
-      onClick={() => onPress?.(id)}
+      onClick={() => !showUndo && onPress?.(id)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onPress?.(id);
+          if (!showUndo) onPress?.(id);
         }
       }}
     >
@@ -84,10 +86,10 @@ function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'i
         />
       </div>
 
-      <div className="flex-1 flex flex-col gap-[2px] ml-[12px]">
+      <div className="flex-1 flex flex-col gap-[2px] ml-[12px] min-w-0">
         <span
           className={[
-            'font-[family-name:var(--font-body)] text-[16px]',
+            'font-[family-name:var(--font-body)] text-[16px] truncate',
             'transition-all duration-[250ms] ease-out',
             (isCompleted || isAnimatingComplete)
               ? 'line-through text-[var(--text-tertiary)] opacity-60'
@@ -98,7 +100,7 @@ function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'i
           {title}
         </span>
 
-        {hasMetadata && (
+        {hasMetadata && !showUndo && (
           <div className="flex items-center gap-[8px]">
             {dueDateInfo && (
               <span
@@ -116,6 +118,18 @@ function TaskRow({ id, title, dueDate, moduleSource, isCompleted, animState = 'i
           </div>
         )}
       </div>
+
+      {showUndo && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onUndo(id);
+          }}
+          className="shrink-0 ml-3 font-[family-name:var(--font-body)] text-[14px] font-semibold text-[var(--forest)] hover:opacity-80 transition-opacity"
+        >
+          Undo
+        </button>
+      )}
 
       {/* Bottom divider */}
       <div className="absolute bottom-0 right-0 left-[48px] h-[0.5px] bg-[var(--hairline)]" />

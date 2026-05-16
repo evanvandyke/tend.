@@ -109,6 +109,12 @@ body {
   animation: task-row-collapse 250ms ease-out forwards;
 }
 
+/* On wide screens, position FAB relative to the 720px content column */
+@media (min-width: 760px) {
+  .fab-position {
+    right: calc(50% - 360px + 20px);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

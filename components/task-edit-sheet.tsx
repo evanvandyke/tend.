@@ -15,9 +15,8 @@ interface TaskEditSheetProps {
 }
 
 const kindOptions: { value: TaskKind; label: string }[] = [
-  { value: 'quick', label: 'Task' },
-  { value: 'recurring', label: 'Lawn' },
-  { value: 'seasonal', label: 'Garden' },
+  { value: 'quick', label: 'Single' },
+  { value: 'recurring', label: 'Recurring' },
   { value: 'project', label: 'Project' },
 ];
 
@@ -152,7 +151,7 @@ function TaskEditSheet({ open, taskId, onClose, onSaved, onDeleted }: TaskEditSh
       {/* Sheet */}
       <div
         className={[
-          'relative w-full bg-[var(--vellum)]',
+          'relative w-full max-w-[480px] mx-auto bg-[var(--vellum)]',
           'rounded-t-[var(--radius-xl)] shadow-[var(--shadow-4)]',
           'p-[24px] pb-[calc(24px+env(safe-area-inset-bottom))]',
           'motion-reduce:transform-none',

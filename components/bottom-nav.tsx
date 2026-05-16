@@ -29,7 +29,7 @@ function BottomNav({ className = '' }: { className?: string }) {
         'fixed bottom-0 left-0 right-0 z-40',
         'h-16 bg-[var(--vellum)] border-t border-[var(--hairline)]',
         'pb-[env(safe-area-inset-bottom)]',
-        'flex items-center justify-around',
+        'flex items-center justify-around max-w-[720px] mx-auto',
         className,
       ].join(' ')}
     >

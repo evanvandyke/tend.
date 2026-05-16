@@ -14,7 +14,7 @@ function FAB({ onClick, className = '' }: FABProps) {
       onClick={onClick}
       aria-label="Add task"
       className={[
-        'fixed bottom-[88px] right-[20px] z-50',
+        'fixed bottom-[88px] right-[20px] z-50 fab-position',
         'w-[56px] h-[56px] rounded-full',
         'bg-[var(--forest)] text-[var(--vellum)]',
         'flex items-center justify-center',

@@ -44,7 +44,7 @@ export default function InstallPage() {
       await deferredPrompt.current.prompt();
       const choice = await deferredPrompt.current.userChoice;
       if (choice.outcome === 'accepted') {
-        router.push('/now');
+        router.push('/setup');
       }
     }
   }
@@ -178,8 +178,51 @@ export default function InstallPage() {
         </div>
       )}
 
-      {/* iOS non-Safari */}
-      {platform.isIOS && !platform.isSafari && (
+      {/* iOS Chrome */}
+      {platform.isIOS && platform.isChrome && (
+        <div>
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>1</div>
+            <p style={stepTextStyle}>
+              Tap the <strong>Share</strong> button in the top right
+              <span style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
+                (the square with an arrow, next to the URL bar)
+              </span>
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>2</div>
+            <p style={stepTextStyle}>
+              Tap <strong>View More</strong> to expand the menu
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>3</div>
+            <p style={stepTextStyle}>
+              Tap <strong>Add to Home Screen</strong>
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>4</div>
+            <p style={stepTextStyle}>
+              Tap <strong>Add</strong> in the top corner
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>5</div>
+            <p style={stepTextStyle}>
+              Open Tend from your home screen&mdash;that&rsquo;s it!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* iOS other browsers (Firefox, Opera, Edge, etc.) */}
+      {platform.isIOS && !platform.isSafari && !platform.isChrome && (
         <div style={{ textAlign: 'center' }}>
           <p
             style={{
@@ -190,7 +233,7 @@ export default function InstallPage() {
               lineHeight: 1.5,
             }}
           >
-            To add Tend to your home screen, you&rsquo;ll need to open this link in <strong>Safari</strong>.
+            To add Tend to your home screen, you&rsquo;ll need to open this link in <strong>Safari</strong> or <strong>Chrome</strong>.
           </p>
           <button
             onClick={copyLink}
@@ -218,7 +261,7 @@ export default function InstallPage() {
               marginTop: 10,
             }}
           >
-            Paste it into Safari&rsquo;s address bar
+            Paste it into the address bar
           </p>
         </div>
       )}
@@ -259,7 +302,7 @@ export default function InstallPage() {
                 Tend works great in the browser too.
               </p>
               <button
-                onClick={() => router.push('/now')}
+                onClick={() => router.push('/setup')}
                 style={{
                   width: '100%',
                   fontFamily: 'var(--font-display)',
@@ -284,7 +327,7 @@ export default function InstallPage() {
       {/* Continue in browser */}
       <p style={{ textAlign: 'center', marginTop: 24 }}>
         <button
-          onClick={() => router.push('/now')}
+          onClick={() => router.push('/setup')}
           style={{
             fontFamily: 'var(--font-body)',
             fontSize: 14,

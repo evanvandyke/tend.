@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
-import { users, pushSubscriptions, userTasks, lunarEvents } from '@/lib/db/schema';
-import { eq, and, lte, gte, asc } from 'drizzle-orm';
-import { startOfDay, addDays, differenceInDays, getISOWeek } from 'date-fns';
-import { checkFrostWarning } from '@/lib/notifications/frost';
+import { users, pushSubscriptions, userTasks, userModules, lunarEvents } from '@/lib/db/schema';
+import { eq, and, gte, lte, asc } from 'drizzle-orm';
+import { startOfDay, addDays, getISOWeek } from 'date-fns';
 import { hasBeenNotified, logNotification } from '@/lib/notifications/dedup';
 import { sendPushNotification } from '@/lib/notifications/push';
+import { getModule } from '@/lib/modules';
+import { isInWindow } from '@/lib/modules/utils';
 
 export async function GET(req: NextRequest) {
   // Verify cron secret
@@ -14,10 +15,8 @@ export async function GET(req: NextRequest) {
   }
 
   const today = startOfDay(new Date());
-  const todayStr = today.toISOString().split('T')[0];
+  const year = today.getFullYear();
   const weekNumber = getISOWeek(today);
-  const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-
   const summary: string[] = [];
 
   // Get all users
@@ -34,142 +33,164 @@ export async function GET(req: NextRequest) {
 
     if (subs.length === 0) continue;
 
-    // Helper to send to all user subs
-    async function sendToUser(payload: { title: string; body: string; url?: string }, topic: string) {
-      for (const sub of subs) {
-        try {
-          await sendPushNotification(
-            { endpoint: sub.endpoint, keys: sub.keys as { p256dh: string; auth: string } },
-            payload
-          );
-        } catch (err) {
-          // Subscription may be expired — log but continue
-          console.error(`Push failed for sub ${sub.id}:`, err);
-        }
-      }
-      await logNotification(user.id, 'push', topic);
-      summary.push(`Sent "${payload.title}" to ${user.email} (topic: ${topic})`);
-    }
+    // Dedup: one briefing per week
+    const topic = `weekend-briefing-${year}-w${weekNumber}`;
+    if (await hasBeenNotified(user.id, topic)) continue;
 
-    // 1. Frost check
-    if (user.locationZip) {
-      try {
-        const frost = await checkFrostWarning(user.locationZip);
-        if (frost.shouldWarn && frost.date) {
-          const topic = `frost-${frost.date}`;
-          if (!(await hasBeenNotified(user.id, topic))) {
-            await sendToUser(
-              {
-                title: '🥶 Frost Warning',
-                body: `Low of ${frost.low}°F expected on ${frost.date}. Cover tender plants!`,
-                url: '/',
-              },
-              topic
-            );
-          }
-        }
-      } catch (err) {
-        console.error(`Frost check failed for ${user.email}:`, err);
-      }
-    }
-
-    // 2. Lunar events today
-    const todayEnd = addDays(today, 1);
-    const lunarToday = await db
-      .select()
-      .from(lunarEvents)
-      .where(and(gte(lunarEvents.eventDate, today), lte(lunarEvents.eventDate, todayEnd)))
-      .orderBy(asc(lunarEvents.eventDate));
-
-    for (const event of lunarToday) {
-      const topic = `lunar-${todayStr}-${event.eventType}`;
-      if (!(await hasBeenNotified(user.id, topic))) {
-        await sendToUser(
-          {
-            title: `🌙 ${event.name}`,
-            body: event.description || `Today: ${event.name}`,
-            url: '/',
-          },
-          topic
-        );
-      }
-    }
-
-    // 3. Stale tasks — module tasks in-window for 7+ days without completion
-    const staleTopic = `stale-tasks-${today.getFullYear()}-w${weekNumber}`;
-    if (!(await hasBeenNotified(user.id, staleTopic))) {
-      const sevenDaysAgo = addDays(today, -7);
-      const staleTasks = await db
-        .select()
-        .from(userTasks)
-        .where(
-          and(
-            eq(userTasks.userId, user.id),
-            eq(userTasks.status, 'active'),
-            lte(userTasks.createdAt, sevenDaysAgo)
-          )
-        );
-
-      // Filter to tasks that are in their window and have no recent completion
-      const overdueTasks = staleTasks.filter((t) => {
-        if (t.lastCompletedAt && differenceInDays(today, t.lastCompletedAt) < 7) return false;
-        // Check if task is in its window
-        if (t.windowStartMonth && t.windowEndMonth) {
-          const month = today.getMonth() + 1;
-          const day = today.getDate();
-          const afterStart =
-            month > t.windowStartMonth ||
-            (month === t.windowStartMonth && day >= (t.windowStartDay ?? 1));
-          const beforeEnd =
-            month < t.windowEndMonth ||
-            (month === t.windowEndMonth && day <= (t.windowEndDay ?? 31));
-          return afterStart && beforeEnd;
-        }
-        return true; // No window means always active
-      });
-
-      if (overdueTasks.length > 0) {
-        await sendToUser(
-          {
-            title: '📋 Tasks Need Attention',
-            body: `${overdueTasks.length} task${overdueTasks.length > 1 ? 's' : ''} waiting for you this week.`,
-            url: '/',
-          },
-          staleTopic
-        );
-      }
-    }
-
-    // 4. Project nudges — active projects with no update in 30+ days
-    const activeProjects = await db
+    // --- Gather active tasks in their current window ---
+    const allTasks = await db
       .select()
       .from(userTasks)
       .where(
         and(
           eq(userTasks.userId, user.id),
-          eq(userTasks.status, 'active'),
-          eq(userTasks.kind, 'project')
+          eq(userTasks.status, 'active')
         )
       );
 
-    for (const project of activeProjects) {
-      const lastUpdate = project.updatedAt ?? project.createdAt;
-      const daysSinceUpdate = differenceInDays(today, lastUpdate);
+    const inWindowTasks = allTasks.filter((t) => {
+      if (t.windowStartMonth && t.windowEndMonth) {
+        const month = today.getMonth() + 1;
+        const day = today.getDate();
+        const afterStart =
+          month > t.windowStartMonth ||
+          (month === t.windowStartMonth && day >= (t.windowStartDay ?? 1));
+        const beforeEnd =
+          month < t.windowEndMonth ||
+          (month === t.windowEndMonth && day <= (t.windowEndDay ?? 31));
+        return afterStart && beforeEnd;
+      }
+      return true; // No window means always active
+    });
 
-      if (daysSinceUpdate >= 30) {
-        const topic = `project-nudge-${project.id}-${currentMonth}`;
-        if (!(await hasBeenNotified(user.id, topic))) {
-          await sendToUser(
-            {
-              title: '🌱 Project Check-in',
-              body: `"${project.title}" hasn't been updated in ${daysSinceUpdate} days. Still growing?`,
-              url: '/',
-            },
-            topic
-          );
+    // --- Gather module tasks in-window ---
+    const enabledModules = await db
+      .select()
+      .from(userModules)
+      .where(
+        and(
+          eq(userModules.userId, user.id),
+          eq(userModules.enabled, true)
+        )
+      );
+
+    const moduleTaskNames: string[] = [];
+    for (const um of enabledModules) {
+      const mod = getModule(um.moduleSlug);
+      if (!mod) continue;
+      for (const task of mod.tasks) {
+        if (isInWindow(today, task)) {
+          moduleTaskNames.push(task.title);
         }
       }
     }
+
+    // Combine task names
+    const taskNames = [
+      ...inWindowTasks.map((t) => t.title),
+      ...moduleTaskNames,
+    ];
+
+    // --- Count active projects ---
+    const activeProjects = allTasks.filter((t) => t.kind === 'project');
+
+    // --- Weather forecast for tomorrow (Saturday) ---
+    let weatherSnippet = '';
+    if (user.locationZip && process.env.OPENWEATHERMAP_API_KEY) {
+      try {
+        const url = `https://api.openweathermap.org/data/2.5/forecast?zip=${user.locationZip},US&units=imperial&appid=${process.env.OPENWEATHERMAP_API_KEY}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          // Group by date, pick tomorrow (Saturday)
+          const entriesByDate: Record<string, Array<{ main: { temp_max: number }; weather: Array<{ main: string }> }>> = {};
+          for (const entry of data.list ?? []) {
+            const dateStr = (entry.dt_txt as string).split(' ')[0];
+            if (!entriesByDate[dateStr]) entriesByDate[dateStr] = [];
+            entriesByDate[dateStr].push(entry);
+          }
+          const dates = Object.keys(entriesByDate).sort();
+          const tomorrowStr = dates[1]; // Tomorrow = Saturday
+          if (tomorrowStr && entriesByDate[tomorrowStr]) {
+            const entries = entriesByDate[tomorrowStr];
+            const high = Math.round(
+              Math.max(...entries.map((e) => e.main.temp_max))
+            );
+            const conditionCounts: Record<string, number> = {};
+            for (const entry of entries) {
+              const cond = entry.weather?.[0]?.main ?? 'Clear';
+              conditionCounts[cond] = (conditionCounts[cond] ?? 0) + 1;
+            }
+            const dominant = Object.entries(conditionCounts).sort((a, b) => b[1] - a[1])[0][0];
+            const conditionLower = dominant.toLowerCase();
+            weatherSnippet = `Saturday: ${high}°F, ${conditionLower}.`;
+          }
+        }
+      } catch {
+        // Weather fetch failed — skip it
+      }
+    }
+
+    // --- Lunar events in next 7 days ---
+    let lunarSnippet = '';
+    const weekFromNow = addDays(today, 7);
+    const upcomingLunar = await db
+      .select()
+      .from(lunarEvents)
+      .where(and(gte(lunarEvents.eventDate, today), lte(lunarEvents.eventDate, weekFromNow)))
+      .orderBy(asc(lunarEvents.eventDate));
+
+    if (upcomingLunar.length > 0) {
+      const event = upcomingLunar[0];
+      const eventDate = new Date(event.eventDate);
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dateLabel = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()}`;
+      lunarSnippet = `🌙 ${event.name} on ${dateLabel}.`;
+    }
+
+    // --- Compose notification ---
+    let body: string;
+
+    if (taskNames.length === 0 && activeProjects.length === 0) {
+      body = 'Nothing on the list this weekend — enjoy the yard! 🌱';
+    } else {
+      const parts: string[] = [];
+
+      if (taskNames.length > 0) {
+        const displayNames = taskNames.slice(0, 3);
+        const taskList = displayNames.join(', ');
+        const suffix = taskNames.length > 3 ? ` (+${taskNames.length - 3} more)` : '';
+        parts.push(`You’ve got ${taskNames.length} task${taskNames.length > 1 ? 's' : ''} this week: ${taskList}${suffix}.`);
+      } else if (activeProjects.length > 0) {
+        parts.push(`${activeProjects.length} active project${activeProjects.length > 1 ? 's' : ''} to check on.`);
+      }
+
+      if (weatherSnippet) parts.push(weatherSnippet);
+      if (lunarSnippet) parts.push(lunarSnippet);
+
+      body = parts.join(' ');
+    }
+
+    const payload = {
+      title: '🌿 Your Weekend Tend List',
+      body,
+      url: '/',
+    };
+
+    // Send to all subscriptions
+    for (const sub of subs) {
+      try {
+        await sendPushNotification(
+          { endpoint: sub.endpoint, keys: sub.keys as { p256dh: string; auth: string } },
+          payload
+        );
+      } catch (err) {
+        console.error(`Push failed for sub ${sub.id}:`, err);
+      }
+    }
+
+    await logNotification(user.id, 'push', topic);
+    summary.push(`Sent "${payload.title}" to ${user.email} (topic: ${topic})`);
   }
 
   return Response.json({

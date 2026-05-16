@@ -55,3 +55,6 @@ yarn-error.log*
 
 # PWA (workbox generated files only — public/sw.js is now a source file)
 workbox-*.js
+
+# Docs
+Docs_Compressions/

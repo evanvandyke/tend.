@@ -157,10 +157,10 @@ export function SettingsClient({ user }: SettingsClientProps) {
           <div className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)]">
             <div>
               <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--iron-gall)]">
-                Push Notifications
+                Weekend Briefing
               </p>
               <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--sepia)] mt-0.5">
-                Frost warnings, lunar events, task reminders
+                Get a summary of your weekend tasks every Friday at 5 PM
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -184,7 +184,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
             <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] mb-2">
               {permission === 'denied'
                 ? 'Push notifications are blocked. Please enable them in your browser settings.'
-                : 'Get frost warnings, lunar events, and task reminders sent to this device.'}
+                : 'Get a weekend briefing with your tasks, weather, and lunar events every Friday at 5 PM.'}
             </p>
             {permission !== 'denied' && (
               <button

@@ -115,7 +115,7 @@ function ModulesList() {
                 aria-label={`${mod.enabled ? 'Disable' : 'Enable'} ${mod.name}`}
               >
                 <span
-                  className="absolute top-[2px] w-[20px] h-[20px] rounded-full bg-white shadow-sm transition-transform duration-200"
+                  className="absolute top-[2px] left-0 w-[20px] h-[20px] rounded-full bg-white shadow-sm transition-transform duration-200"
                   style={{
                     transform: mod.enabled
                       ? 'translateX(22px)'

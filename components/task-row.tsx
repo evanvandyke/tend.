@@ -14,25 +14,39 @@ interface TaskRowProps {
   onPress?: (id: string) => void;
 }
 
-function getDueDateDisplay(dueDate: string): { text: string; className: string } {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const due = new Date(dueDate);
-  due.setHours(0, 0, 0, 0);
+function toDateString(date: Date): string {
+  // Return YYYY-MM-DD in local timezone
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
-  if (due.getTime() === today.getTime()) {
+function getDueDateDisplay(dueDate: string): { text: string; className: string } {
+  // Extract date-only portion to avoid timezone shifting.
+  // If dueDate is ISO (e.g. "2026-05-16T00:00:00Z"), take the first 10 chars.
+  // If it's already "2026-05-16", use as-is.
+  const dueDateOnly = dueDate.slice(0, 10); // "YYYY-MM-DD"
+
+  const now = new Date();
+  const todayStr = toDateString(now);
+  const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const tomorrowStr = toDateString(tomorrowDate);
+
+  if (dueDateOnly === todayStr) {
     return { text: 'Today', className: 'text-[var(--forest)]' };
   }
-  if (due.getTime() === tomorrow.getTime()) {
+  if (dueDateOnly === tomorrowStr) {
     return { text: 'Tomorrow', className: 'text-[var(--text-secondary)]' };
   }
-  if (due < today) {
+  if (dueDateOnly < todayStr) {
     return { text: 'Overdue', className: 'text-[var(--bordeaux)] font-medium' };
   }
+  // Parse for display purposes using local date parts to avoid shift
+  const [year, month, day] = dueDateOnly.split('-').map(Number);
+  const displayDate = new Date(year, month - 1, day);
   return {
-    text: due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    text: displayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     className: 'text-[var(--text-secondary)]',
   };
 }

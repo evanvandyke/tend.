@@ -75,7 +75,7 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
               onChange={(e) => handlePushToggle(e.target.checked)}
               disabled={isPending}
             />
-            <div className="w-[44px] h-[24px] bg-[var(--hairline)] peer-checked:bg-[var(--bordeaux)] rounded-full transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[20px] after:w-[20px] after:transition-transform peer-checked:after:translate-x-[20px]" />
+            <div className="w-[44px] h-[24px] bg-[var(--hairline)] peer-checked:bg-[var(--bordeaux)] rounded-full transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[20px] after:w-[20px] after:transition-transform peer-checked:after:translate-x-[22px]" />
           </label>
         </div>
 

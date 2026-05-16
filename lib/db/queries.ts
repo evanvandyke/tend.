@@ -19,6 +19,7 @@ export type FeedItem = {
   // For user tasks:
   taskId?: number;
   kind?: string;
+  projectData?: unknown;
   // For module tasks:
   moduleSlug?: string;
   taskSlug?: string;
@@ -118,6 +119,7 @@ export async function getNowFeed(userId: string): Promise<NowFeedResult> {
         isCompleted: false,
         taskId: task.id,
         kind: task.kind,
+        projectData: task.projectData,
       });
       continue;
     }

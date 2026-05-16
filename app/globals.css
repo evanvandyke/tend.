@@ -121,6 +121,11 @@ body {
   }
 }
 
+.undo-toast-position {
+  left: 50%;
+  bottom: 88px;
+}
+
 .undo-toast {
   transform: translateX(-50%) translateY(16px);
   opacity: 0;

@@ -339,7 +339,7 @@ function UndoToast({ pending, onUndo }: UndoToastProps) {
   return (
     <div
       className={[
-        'fixed left-1/2 -translate-x-1/2 bottom-[88px] z-50',
+        'fixed z-50 undo-toast-position',
         'max-w-[320px] w-[calc(100%-32px)]',
         'bg-[var(--aged-paper)] border border-[var(--hairline)] rounded-[var(--radius-md)]',
         'shadow-[var(--shadow-2)]',

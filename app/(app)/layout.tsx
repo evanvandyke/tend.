@@ -16,7 +16,9 @@ export default async function AppLayout({
 
   return (
     <main id="main-content" className="min-h-screen flex flex-col bg-[var(--parchment)]">
-      {children}
+      <div className="w-full max-w-[720px] mx-auto flex-1 flex flex-col">
+        {children}
+      </div>
       <GlobalFAB />
       <BottomNav />
     </main>

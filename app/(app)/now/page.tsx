@@ -44,11 +44,17 @@ export default async function NowPage() {
 
   const thisWeek: NowFeedItemData[] = feed.thisWeek.map(feedItemToClientData);
   const comingUp: NowFeedItemData[] = feed.comingUp.map(feedItemToClientData);
-  const openProjects: ProjectData[] = feed.openProjects.map((p) => ({
-    id: String(p.taskId),
-    title: p.title,
-    description: p.content,
-  }));
+  const openProjects: ProjectData[] = feed.openProjects.map((p) => {
+    const pd = p.projectData as { subtasks?: { title: string; done: boolean }[] } | null;
+    const subtasks = pd?.subtasks ?? [];
+    return {
+      id: String(p.taskId),
+      title: p.title,
+      description: p.content,
+      subtaskCount: subtasks.length > 0 ? subtasks.length : undefined,
+      completedCount: subtasks.filter(s => s.done).length,
+    };
+  });
   const doneToday: NowFeedItemData[] = completedToday.map(feedItemToClientData);
 
   return (

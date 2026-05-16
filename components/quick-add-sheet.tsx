@@ -13,8 +13,6 @@ interface QuickAddSheetProps {
 
 const moduleOptions: { value: ModuleType; label: string }[] = [
   { value: 'task', label: 'Task' },
-  { value: 'lawn', label: 'Lawn' },
-  { value: 'garden', label: 'Garden' },
   { value: 'project', label: 'Project' },
 ];
 

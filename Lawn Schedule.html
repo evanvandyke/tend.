@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northern Utah Lawn Care Plan (Tabbed)</title>
+    <style>
+        /* Basic Styling */
+         body { font-family: sans-serif; line-height: 1.6; margin: 20px; background-color: #e8f5e9; color: #333; }
+        .container { max-width: 900px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        h1 { text-align: center; border-bottom: 3px solid #a5d6a7; padding-bottom: 10px; margin-bottom: 25px; color: #1b5e20;}
+        h2 { /* Section Headers within Tabs */ color: #1b5e20; margin-top: 25px; border-bottom: 2px solid #c8e6c9; padding-bottom: 5px;}
+        h3 { /* Sub-headers like Month names */ margin-top: 25px; margin-bottom: 10px; color: #388e3c; border-bottom: 1px solid #e0e0e0; padding-bottom: 3px; }
+
+        /* Tab Styles */
+        .tab-buttons { overflow: hidden; border-bottom: 1px solid #ccc; margin-bottom: 15px; background-color: #f1f1f1; border-radius: 5px 5px 0 0; }
+        .tab-buttons button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; font-size: 1em; border-right: 1px solid #ccc;}
+        .tab-buttons button:last-child { border-right: none; }
+        .tab-buttons button:hover { background-color: #ddd; }
+        .tab-buttons button.active { background-color: #c8e6c9; /* Light green active tab */ color: #1b5e20; font-weight: bold; }
+
+        /* Tab Content Styles */
+        .tab-panel { display: none; padding: 10px 12px; border-top: none; animation: fadeEffect 0.5s; }
+        .tab-panel.active { display: block; }
+        @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} } /* Fade in effect */
+
+        .task-item { margin-bottom: 18px; padding: 12px; border: 1px solid #e0e0e0; border-radius: 5px; background-color: #f9f9f9; }
+        .task-item input[type="checkbox"] { margin-right: 8px; cursor: pointer; transform: scale(1.1); }
+        .task-item label { font-weight: bold; cursor: pointer; }
+        .details { margin-top: 8px; padding-left: 28px; font-size: 0.95em; color: #444; }
+        .details strong { color: #2e7d32; }
+        .timing { font-style: italic; color: #555; margin-bottom: 5px; font-size: 0.9em; display: block; padding-left: 28px; }
+
+        .important-note, .calculator-section, .weather-section, .calendar-guide, .water-note { border-radius: 5px; padding: 15px; margin: 20px 0; font-size: 0.95em; }
+        .important-note { background-color: #fff3e0; border-left: 4px solid #ff9800; }
+        .calculator-section { background-color: #e0f2f7; border-left: 4px solid #00acc1;}
+        .calculator-section h3 { margin-top: 0; color: #006064;}
+        .calculator-section label { font-weight: bold; margin-right: 5px;}
+        .calculator-section input[type="number"] { padding: 5px; width: 80px; margin-right: 10px; border: 1px solid #ccc; border-radius: 3px;}
+        .calculator-section button { padding: 5px 10px; background-color: #00796b; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .calculator-section button:hover { background-color: #004d40; }
+        #calc-result { margin-top: 10px; font-weight: bold;}
+        .weather-section { background-color: #f0f4f8; border-left: 4px solid #546e7a;}
+        .weather-section h3 { margin-top: 0; color: #37474f; border-bottom: 1px solid #b0bec5; padding-bottom: 5px; }
+        .weather-loading, .weather-error { font-style: italic; color: #546e7a; }
+        .weather-error-activation { font-style: italic; color: #ff9800; font-weight: bold; }
+        .weather-data span { display: block; margin-bottom: 5px; }
+        .weather-data img { vertical-align: middle; margin-right: 5px; }
+        .calendar-guide { background-color: #f3e5f5; border-left: 4px solid #8e24aa; }
+        .calendar-guide ul { list-style: none; padding-left: 10px; }
+        .calendar-guide li { margin-bottom: 10px; }
+        .calendar-guide li a { /* Style links in calendar */ color: #6a1b9a; text-decoration: underline; font-weight: bold; cursor: pointer; }
+        .calendar-guide li a:hover { color: #4a148c; }
+        .water-note { background-color: #e3f2fd; border-left: 4px solid #2196F3; }
+        .disclaimer { margin-top: 40px; font-size: 0.85em; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
+        ul { padding-left: 20px; margin-top: 5px; }
+        li { margin-bottom: 8px; }
+        a { color: #1976d2; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .section-intro { margin-bottom: 15px; font-style: italic; color: #555; }
+        .calc-note { color: #d32f2f; font-weight: bold; font-size: 0.9em; display: block; margin-top: 5px; }
+        .anchor-point { /* Invisible element to act as anchor target */ display: block; position: relative; top: -70px; /* Offset for potential fixed header/tabs */ visibility: hidden; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Northern Utah Lawn Care Plan</h1>
+        <p class="section-intro">A year-round checklist for maintaining a healthy lawn in Northern Utah (Cool-Season Grass). Use the tabs below to navigate.</p>
+
+        <!-- Tab Buttons -->
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="openTab(event, 'monthlyGuideTab')">Monthly Guide</button>
+            <button class="tab-button" onclick="openTab(event, 'ongoingTasksTab')">Ongoing Task Details</button>
+            <button class="tab-button" onclick="openTab(event, 'seasonalTasksTab')">Seasonal Task Details</button>
+            <button class="tab-button" onclick="openTab(event, 'toolsInfoTab')">Tools & Info</button>
+        </div>
+
+        <!-- Tab Content Panels -->
+        <div class="tab-content">
+
+            <!-- Monthly Guide Tab Panel (Default Active) -->
+            <div id="monthlyGuideTab" class="tab-panel active">
+                <span id="calendar_anchor" class="anchor-point"></span>
+                <h2>Monthly Lawn Care Focus (Northern Utah)</h2>
+                <p class="section-intro">Use this as your primary guide. Click links to jump to details in other tabs.</p>
+
+                <h3>March</h3>
+                <ul>
+                    <li>Begin <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'spring_cleanup_task'); return false;">Spring Cleanup Rake</a> as snow melts.</li>
+                    <li>Prepare Mower: <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'mower_prep_task'); return false;">Sharpen blades, tune-up</a>.</li>
+                </ul>
+
+                <h3>April</h3>
+                <ul>
+                    <li>Startup Sprinklers: <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'sprinkler_check_task'); return false;">Check system</a> (after freeze risk).</li>
+                    <li>Begin <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'mowing_details'); return false;">Mowing</a> (when grass is 3.5-4" & dry).</li>
+                    <li>**Key Task:** Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_early_spring'); return false;">Early Spring Fertilizer +/- Crabgrass Preventer</a> (Check timing!).</li>
+                    <li>Begin <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'watering_details'); return false;">Watering Schedule</a> as needed.</li>
+                    <li>Spot treat <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'weeding_details'); return false;">Early Weeds</a>.</li>
+                    <li>Begin <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'edging_details'); return false;">Edging/Trimming</a>.</li>
+                </ul>
+
+                <h3>May</h3>
+                <ul>
+                    <li>**Key Task:** Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_late_spring'); return false;">Late Spring Fertilizer</a>.</li>
+                    <li>Continue regular <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'mowing_details'); return false;">Mowing</a>, <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'watering_details'); return false;">Watering</a>, <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'weeding_details'); return false;">Weeding</a>, <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'edging_details'); return false;">Edging</a>.</li>
+                </ul>
+
+                <h3>June</h3>
+                <ul>
+                    <li>Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_late_spring'); return false;">Late Spring Fertilizer</a> if not done yet.</li>
+                    <li>Adjust <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'watering_details'); return false;">Watering</a> for heat (check guides).</li>
+                    <li>Continue regular tasks.</li>
+                    <li>Monitor for <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'grubs_task'); return false;">Grubs / Insects</a>.</li>
+                </ul>
+
+                <h3>July / August (Summer Stress)</h3>
+                <ul>
+                    <li>**Focus on Water:** Prioritize <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'watering_details'); return false;">Watering</a> per guides.</li>
+                    <li>Adjust <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'mowing_details'); return false;">Mowing</a>: Mow high, less often, avoid midday heat.</li>
+                    <li>Optional: Light Feed or Iron: Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_summer'); return false;">Summer Fertilizer/Iron</a> ONLY if needed & lawn NOT stressed.</li>
+                    <li>Continue monitoring for <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'grubs_task'); return false;">Grubs</a>.</li>
+                    <li>Continue <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'weeding_details'); return false;">Weeding</a> & <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'edging_details'); return false;">Edging</a>.</li>
+                </ul>
+
+                <h3>September (Recovery & Repair)</h3>
+                <ul>
+                    <li>**Prime Time!** <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'aerate_fall'); return false;">Core Aerate</a> (Recommended).</li>
+                    <li>**Prime Time!** <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'overseed_fall'); return false;">Overseed / Repair</a> bare spots (after aerating).</li>
+                    <li>**Key Task:** Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_early_fall'); return false;">Early Fall Fertilizer</a> (Most important feed!).</li>
+                    <li>Focus on Fall <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'weeding_details'); return false;">Weed Control</a>.</li>
+                    <li>Adjust <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'watering_details'); return false;">Watering</a> down as temps cool (keep new seed moist).</li>
+                    <li>Continue <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'mowing_details'); return false;">Mowing</a> & <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'edging_details'); return false;">Edging</a>.</li>
+                </ul>
+
+                 <h3>October</h3>
+                <ul>
+                    <li>Continue Fall <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'weeding_details'); return false;">Weed Control</a> if needed.</li>
+                    <li>Keep up with <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'leaf_cleanup_task'); return false;">Leaf Cleanup</a>.</li>
+                    <li>**Key Task:** <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'sprinkler_blowout_task'); return false;">Winterize Sprinklers (Blowout!)</a> BEFORE hard freeze.</li>
+                    <li>Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_winterizer'); return false;">Late Fall / Winterizer Fertilizer</a> (late Oct onward).</li>
+                    <li>Continue <a href="#" onclick="goToTabAndAnchor('ongoingTasksTab', 'mowing_details'); return false;">Mowing</a> until growth stops. Prepare for <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'final_mow_task'); return false;">Final Mow</a>.</li>
+                </ul>
+
+                <h3>November</h3>
+                <ul>
+                    <li>Apply <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'fertilize_winterizer'); return false;">Winterizer Fertilizer</a> if not done yet (before ground freezes).</li>
+                    <li>Perform <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'final_mow_task'); return false;">Final Mow</a> if not done yet.</li>
+                    <li>Finish <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'leaf_cleanup_task'); return false;">Leaf Cleanup</a>.</li>
+                    <li><a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'tool_cleanup_task'); return false;">Clean and Store Tools</a>.</li>
+                </ul>
+
+                 <h3>December / January / February (Dormancy)</h3>
+                <ul>
+                    <li>Minimize <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'winter_traffic_task'); return false;">Lawn Traffic</a> on frozen grass.</li>
+                    <li>Avoid <a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'salt_damage_task'); return false;">Salt Damage</a> near lawn.</li>
+                    <li><a href="#" onclick="goToTabAndAnchor('seasonalTasksTab', 'winter_planning_task'); return false;">Plan</a> for next season!</li>
+                </ul>
+            </div>
+
+            <!-- Ongoing Task Details Tab Panel -->
+            <div id="ongoingTasksTab" class="tab-panel">
+                <span id="ongoing_tasks_details" class="anchor-point"></span>
+                <h2>Ongoing Task Details</h2>
+                <p class="section-intro">Details for tasks performed regularly throughout the growing season.</p>
+
+                 <div class="task-item">
+                     <span id="mowing_details" class="anchor-point"></span>
+                     <input type="checkbox" id="ongoing_mowing_detail" name="ongoing_mowing_detail" disabled><label for="ongoing_mowing_detail">Mowing Details</label>
+                     <div class="timing">Typically starts April, ends late Oct/Nov. Adjust frequency based on growth.</div>
+                     <div class="details">
+                         <ul>
+                             <li><strong>Height:</strong> Mow cool-season grasses high in Utah: **3 to 4 inches**.</li>
+                             <li><strong>Frequency / 1/3 Rule:</strong> Never remove more than **one-third** of the grass blade height in a single mowing. If grass is 4.5 inches tall, mow no lower than 3 inches. Mow more often in spring/fall (every 4-7 days), less in summer heat.</li>
+                             <li><strong>Blades:</strong> Keep mower blades **sharp**.</li>
+                             <li><strong>Clippings:</strong> **Mulch (leave) clippings** whenever possible (free fertilizer!).</li>
+                             <li><strong>Pattern:</strong> Vary mowing pattern.</li>
+                             <li><strong>Dry Grass Only:** Always mow when grass is dry.</li>
+                         </ul>
+                     </div>
+                 </div>
+                 <div class="task-item">
+                      <span id="watering_details" class="anchor-point"></span>
+                      <input type="checkbox" id="ongoing_watering_detail" name="ongoing_watering_detail" disabled><label for="ongoing_watering_detail">Watering Details (Culinary Water)</label>
+                     <div class="water-note">
+                         <strong>Water Conservation is Key!</strong> Check weekly local guides: <a href="https://conservewater.utah.gov/weekly-lawn-watering-guide/" target="_blank" rel="noopener noreferrer">Utah Weekly Watering Guide</a> or <a href="https://slowtheflow.org" target="_blank" rel="noopener noreferrer">SlowTheFlow.org</a>. Adjust based on rainfall.
+                     </div>
+                     <div class="timing">Typically starts April/May, peaks July/Aug, reduces Sept/Oct, stop before ground freeze.</div>
+                     <div class="details">
+                         <ul>
+                             <li><strong>Principle:</strong> Water **Deeply and Infrequently**.</li>
+                             <li><strong>Amount:</strong> Aim for total weekly water (rain + sprinklers) of ~1 inch (mild weather) up to **1.5 - 2 inches** (peak summer heat).</li>
+                             <li><strong>Measure:</strong> Use catch cans to determine run time per session (aim for 0.5 - 0.75 inches each time).</li>
+                             <li><strong>Frequency:</strong> Water only **2-3 times per week** max, following guidelines.</li>
+                             <li><strong>Timing:</strong> Water **early morning** (4 AM - 8 AM).</li>
+                             <li><strong>New Seed:** Requires light, frequent watering until established, then switch.</li>
+                         </ul>
+                     </div>
+                 </div>
+                 <div class="task-item">
+                      <span id="edging_details" class="anchor-point"></span>
+                      <input type="checkbox" id="ongoing_edging_detail" name="ongoing_edging_detail" disabled><label for="ongoing_edging_detail">Edging & Trimming Details</label>
+                      <div class="timing">Typically starts April/May with regular mowing, continue through Fall as needed.</div>
+                     <div class="details">
+                         Edge along hard surfaces and trim around obstacles every 1-3 mows for a clean look. Usually done after mowing.
+                     </div>
+                 </div>
+                 <div class="task-item">
+                     <span id="weeding_details" class="anchor-point"></span>
+                     <input type="checkbox" id="ongoing_weeds_detail" name="ongoing_weeds_detail" disabled><label for="ongoing_weeds_detail">Weed Control Details</label>
+                     <div class="timing">Monitor Spring-Fall. Treat actively growing weeds. Fall effective for perennials. Pre-emergent (if used) early Spring only.</div>
+                     <div class="details">
+                         <ul>
+                             <li><strong>Best Defense:</strong> Thick, healthy lawn.</li>
+                             <li><strong>Manual Pulling:</strong> Effective when soil moist. Get the whole root.</li>
+                             <li><strong>Spot Treating:</strong> Use selective liquid herbicide. Apply carefully (dry, low wind, no rain expected). Read label re: new grass.</li>
+                             <li><strong>Pre-Emergent (Crabgrass):</strong> Use in *early spring* (April) **ONLY if NOT seeding**. Prevents all seeds.</li>
+                         </ul>
+                     </div>
+                 </div>
+            </div>
+
+            <!-- Seasonal Task Details Tab Panel -->
+            <div id="seasonalTasksTab" class="tab-panel">
+                <span id="seasonal_tasks_details" class="anchor-point"></span>
+                <h2>Seasonal Task Details</h2>
+                <p class="section-intro">Details for less frequent, specific seasonal tasks.</p>
+
+                 <!-- Early Spring -->
+                <div class="task-item">
+                    <span id="spring_cleanup_task" class="anchor-point"></span>
+                    <input type="checkbox" id="spring_cleanup" name="spring_cleanup"><label for="spring_cleanup">Spring Cleanup Rake (Early Spring: March/April)</label>
+                    <div class="details"> Gently rake to remove winter debris once ground firms up.</div>
+                </div>
+                <div class="task-item">
+                    <span id="mower_prep_task" class="anchor-point"></span>
+                    <input type="checkbox" id="mower_prep" name="mower_prep"><label for="mower_prep">Mower Preparation (Early Spring: March/April)</label>
+                    <div class="details"> BEFORE first mow: Sharpen blades, tune-up.</div>
+                </div>
+                <div class="task-item">
+                    <span id="sprinkler_check_task" class="anchor-point"></span>
+                    <input type="checkbox" id="sprinkler_check" name="sprinkler_check"><label for="sprinkler_check">Sprinkler System Check & Startup (Mid Spring: April)</label>
+                    <div class="timing">Wait until freeze risk passes.</div>
+                    <div class="details"> Check for leaks, breaks, clogs. Adjust heads/coverage. Check run times.</div>
+                </div>
+
+                <!-- Fertilizing Steps -->
+                <div class="task-item">
+                    <span id="fertilize_early_spring" class="anchor-point"></span>
+                    <input type="checkbox" id="step1_fertilize" name="step1_fertilize"><label for="step1_fertilize">Fertilizer 1: Early Spring +/- Pre-Emergent (Mid Spring: April)</label>
+                     <div class="timing">Soil temps 50-55°F.</div>
+                    <div class="details"> <strong>Goal:</strong> Green-up, optional crabgrass prevention. <strong>Fertilizer:</strong> Balanced (e.g., 16-4-8) or w/ Pre-Emergent. <strong>Rate:</strong> ~0.75 lbs N/1000 sq ft. <span class="calc-note">Use Factor from <a href="#" onclick="goToTabAndAnchor('toolsInfoTab', 'calculator_anchor'); return false;">Calculator</a>.</span> <strong>NO Pre-Emergent if seeding spring!</strong></div>
+                </div>
+                 <div class="task-item">
+                     <span id="fertilize_late_spring" class="anchor-point"></span>
+                    <input type="checkbox" id="step2_fertilize" name="step2_fertilize"><label for="step2_fertilize">Fertilizer 2: Late Spring / Early Summer (Late Spring: May/June)</label>
+                    <div class="timing">6-8 weeks after Step 1.</div>
+                     <div class="details"> <strong>Goal:</strong> Support peak growth. <strong>Fertilizer:</strong> Higher N, slow-release (e.g., 24-2-8). <strong>Rate:</strong> ~0.75-1 lb N/1000 sq ft. <span class="calc-note">Use Factor.</span></div>
+                </div>
+                <div class="task-item">
+                     <span id="fertilize_summer" class="anchor-point"></span>
+                     <input type="checkbox" id="step3_fertilize" name="step3_fertilize"><label for="step3_fertilize">Fertilizer 3: Light Summer Feed / Iron (Optional) (Summer: July/August)</label>
+                     <div class="timing">ONLY if needed & lawn NOT stressed/dormant.</div>
+                     <div class="details"> <strong>Goal:</strong> Maintain color if needed. <strong>Options:</strong> Organic (Milorganite) OR light rate (0.25-0.5 lbs N/1000 sq ft) slow-release synthetic OR Iron supplement if yellow despite water. <span class="calc-note">Use Factor if applying feed/iron product rated per area.</span> <strong>Focus on water first!</strong></div>
+                 </div>
+                  <div class="task-item">
+                     <span id="fertilize_early_fall" class="anchor-point"></span>
+                     <input type="checkbox" id="step4_fertilize" name="step4_fertilize"><label for="step4_fertilize">Fertilizer 4: Early Fall Feed (Most Important!) (Early Fall: Sept)</label>
+                     <div class="timing">Apply *after* aeration/overseeding.</div>
+                     <div class="details"> <strong>Goal:</strong> Root growth, recovery. <strong>Fertilizer:</strong> High N, adequate K (e.g., 24-2-12). <strong>Rate:</strong> 1 lb N/1000 sq ft. <span class="calc-note">Use Factor.</span></div>
+                 </div>
+                 <div class="task-item">
+                     <span id="fertilize_winterizer" class="anchor-point"></span>
+                     <input type="checkbox" id="step5_fertilize" name="step5_fertilize"><label for="step5_fertilize">Fertilizer 5: Late Fall / Winterizer (Late Fall: Late Oct - Nov)</label>
+                     <div class="timing">After top growth stops, before ground freeze.</div>
+                     <div class="details"> <strong>Goal:</strong> Winter hardiness, spring green-up. <strong>Fertilizer:</strong> "Winterizer" formula (e.g., 22-0-10). <strong>Rate:</strong> 1 lb N/1000 sq ft. <span class="calc-note">Use Factor.</span></div>
+                 </div>
+
+                 <!-- Other Seasonal Tasks -->
+                 <div class="task-item">
+                     <span id="grubs_task" class="anchor-point"></span>
+                     <input type="checkbox" id="monitor_grubs" name="monitor_grubs"><label for="monitor_grubs">Monitor for Grubs / Insect Damage (Summer: June-August)</label>
+                     <div class="details"> Look for damage unresponsive to water. Confirm presence (> 5-10/sq ft) before treating.</div>
+                 </div>
+                 <div class="task-item">
+                     <span id="aerate_fall" class="anchor-point"></span>
+                     <input type="checkbox" id="core_aeration" name="core_aeration"><label for="core_aeration">Core Aerate (Recommended) (Early Fall: Sept)</label>
+                     <div class="details"> Relieves compaction. Rent or hire. Best before overseeding. Leave plugs.</div>
+                 </div>
+                 <div class="task-item">
+                     <span id="overseed_fall" class="anchor-point"></span>
+                     <input type="checkbox" id="overseed_bare_patches" name="overseed_bare_patches"><label for="overseed_bare_patches">Overseed / Repair Bare Areas (Early Fall: Sept)</label>
+                     <div class="timing">Best time for cool-season grass. Do AFTER aeration.</div>
+                     <div class="details"> Prep soil -> Select seed -> Apply seed -> Apply starter fertilizer (seeded areas only) -> Water frequently until established. Address trenched areas here.</div>
+                 </div>
+                  <div class="task-item">
+                     <span id="leaf_cleanup_task" class="anchor-point"></span>
+                     <input type="checkbox" id="leaf_removal" name="leaf_removal"><label for="leaf_removal">Leaf Cleanup (Late Fall: Oct/Nov)</label>
+                     <div class="details"> Rake or mulch mow frequently to prevent smothering grass.</div>
+                 </div>
+                 <div class="task-item">
+                     <span id="final_mow_task" class="anchor-point"></span>
+                     <input type="checkbox" id="final_mow" name="final_mow"><label for="final_mow">Final Mow (Late Fall: Oct/Nov)</label>
+                     <div class="details"> Lower height slightly (2.5-3 inches) before persistent snow. Mow dry.</div>
+                 </div>
+                 <div class="task-item">
+                     <span id="sprinkler_blowout_task" class="anchor-point"></span>
+                     <input type="checkbox" id="sprinkler_blowout" name="sprinkler_blowout"><label for="sprinkler_blowout">Sprinkler System Winterization (Blowout!) (Late Fall: Oct/Nov)</label>
+                     <div class="timing">BEFORE first hard freeze!</div>
+                     <div class="details"> CRITICAL. Use compressor or hire pro. Prevents freeze damage.</div>
+                 </div>
+                  <div class="task-item">
+                     <span id="tool_cleanup_task" class="anchor-point"></span>
+                     <input type="checkbox" id="tool_cleanup" name="tool_cleanup"><label for="tool_cleanup">Clean and Store Tools (Late Fall: Nov)</label>
+                     <div class="details"> Clean equipment, stabilize/drain fuel, store dry.</div>
+                 </div>
+                  <div class="task-item">
+                     <span id="winter_traffic_task" class="anchor-point"></span>
+                     <input type="checkbox" id="winter_traffic" name="winter_traffic"><label for="winter_traffic">Minimize Lawn Traffic (Winter: Dec-Feb)</label>
+                     <div class="details"> Avoid walking on frozen grass.</div>
+                 </div>
+                 <div class="task-item">
+                     <span id="salt_damage_task" class="anchor-point"></span>
+                     <input type="checkbox" id="salt_damage" name="salt_damage"><label for="salt_damage">Avoid Salt Damage (Winter: Dec-Feb)</label>
+                     <div class="details"> Minimize de-icing salt near lawn.</div>
+                 </div>
+                  <div class="task-item">
+                     <span id="winter_planning_task" class="anchor-point"></span>
+                     <input type="checkbox" id="winter_planning" name="winter_planning"><label for="winter_planning">Plan for Next Season (Winter: Dec-Feb)</label>
+                     <div class="details"> Review, research, check supplies.</div>
+                 </div>
+            </div>
+
+            <!-- Tools & Info Tab Panel -->
+            <div id="toolsInfoTab" class="tab-panel">
+                <h2>Tools & Information</h2>
+
+                <!-- Lawn Size Calculator -->
+                <div class="calculator-section" style="margin-top:0;"> <!-- Remove top margin if first element -->
+                    <span id="calculator_anchor" class="anchor-point"></span>
+                    <h3>Product Amount Calculator</h3>
+                    <label for="lawn-sqft-tool">Enter Your Total Lawn Square Footage:</label>
+                    <input type="number" id="lawn-sqft-tool" placeholder="e.g., 3700" aria-label="Lawn square footage">
+                    <button id="calc-button-tool">Calculate Factor</button>
+                    <p id="calc-result-tool">Calculation Factor will appear here.</p>
+                </div>
+
+                <!-- Weather Section -->
+                <div class="weather-section">
+                    <span id="weather_anchor" class="anchor-point"></span>
+                    <h3>Local Weather (<span id="weather-location-tool">Loading...</span>)</h3>
+                    <div id="weather-content-tool">
+                        <p class="weather-loading">Fetching weather data...</p>
+                    </div>
+                     <p style="font-size: 0.8em; margin-top: 10px;"> Displays *current* conditions. Check dedicated sources for multi-day forecasts.</p>
+                </div>
+
+                <!-- Key Concepts -->
+                <div class="important-note">
+                     <span id="concepts_anchor" class="anchor-point"></span>
+                     <h3>Key Concepts</h3>
+                     <ul>
+                         <li><strong>1/3 Rule for Mowing:</strong> Never remove more than one-third of the grass blade's total height in a single mowing.</li>
+                         <li><strong>Deep & Infrequent Watering:</strong> Encourages deep roots, making lawn more drought tolerant than light, frequent watering.</li>
+                         <li><strong>Soil Test:</strong> Best way to know exact nutrient needs (<a href="https://usual.usu.edu/" target="_blank" rel="noopener noreferrer">USU Analytical Lab</a>).</li>
+                         <li><strong>N-P-K:</strong> Fertilizer analysis (% Nitrogen - % Phosphorus - % Potassium).</li>
+                         <li><strong>Read Labels:</strong> Critical for application rates, spreader settings, safety, and timing (e.g., water-in requirements).</li>
+                         <li><strong>Calculation Factor:</strong> Use the calculator above! Apply products based on YOUR lawn size, not just the bag coverage estimate.</li>
+                     </ul>
+                </div>
+
+            </div>
+
+        </div> <!-- End Tab Content -->
+
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> General guidelines for Northern Utah cool-season lawns. Conditions vary. Observe your lawn. Follow product labels precisely. Responsible lawn care protects water quality. Consult USU Extension for specific local advice.
+        </div>
+    </div>
+
+    <!-- ****** JAVASCRIPT ****** -->
+    <script>
+        // --- Tab Switching Logic ---
+        function openTab(evt, tabId) {
+            let i, tabcontent, tablinks;
+            // Hide all tab panels
+            tabcontent = document.getElementsByClassName("tab-panel");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active"); // Ensure active class removed
+            }
+            // Remove active class from all tab buttons
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            // Show the specific tab panel and set button to active
+            document.getElementById(tabId).style.display = "block";
+            document.getElementById(tabId).classList.add("active"); // Add active class for potential styling/logic
+            if (evt) { // Check if called by event (button click)
+                 evt.currentTarget.classList.add("active");
+            } else { // Find button corresponding to tabId if called programmatically
+                const buttons = document.querySelectorAll(`.tab-button[onclick*="'${tabId}'"]`);
+                if(buttons.length > 0) buttons[0].classList.add('active');
+            }
+        }
+
+        // Function to switch tab AND scroll to an anchor within it
+        function goToTabAndAnchor(tabId, anchorId) {
+            // Switch to the target tab first
+            openTab(null, tabId); // Pass null for event as it's called programmatically
+
+            // Now find the anchor and scroll to it
+            // Use setTimeout to allow the tab panel display change to render first
+            setTimeout(() => {
+                const anchorElement = document.getElementById(anchorId);
+                if (anchorElement) {
+                    anchorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    console.warn("Anchor not found:", anchorId);
+                }
+            }, 100); // Small delay helps ensure element is visible
+        }
+
+        // Initialize the default tab (Monthly Guide)
+        document.addEventListener('DOMContentLoaded', () => {
+            openTab(null, 'monthlyGuideTab'); // Ensure default tab is shown on load
+        });
+
+
+        // --- Lawn Size Calculator (Needs unique IDs for the Tools tab) ---
+        const sqftInputTool = document.getElementById('lawn-sqft-tool');
+        const calcButtonTool = document.getElementById('calc-button-tool');
+        const calcResultTool = document.getElementById('calc-result-tool');
+
+        // Function to update both calculators if needed, or just keep them separate
+        function calculateFactorTool() {
+            const sqft = parseFloat(sqftInputTool.value);
+            if (isNaN(sqft) || sqft <= 0) {
+                calcResultTool.textContent = 'Please enter a valid square footage.';
+                calcResultTool.style.color = 'red';
+                // Optionally update the other calculator too
+                // const calcResultMain = document.getElementById('calc-result');
+                // if(calcResultMain) calcResultMain.textContent = 'Enter valid SqFt in Tools tab.';
+                return null;
+            }
+            const factor = (sqft / 1000).toFixed(2);
+            calcResultTool.textContent = `Factor: ${factor}. (Ex: 3 lbs/1000 sq ft needs ${factor} * 3 = ${(factor * 3).toFixed(1)} lbs total).`;
+            calcResultTool.style.color = '#1b5e20';
+            // Optionally update the other calculator display too
+            // const calcResultMain = document.getElementById('calc-result');
+            // if(calcResultMain) calcResultMain.textContent = `Factor is ${factor} (Set in Tools tab).`;
+            return factor;
+        }
+
+        // Add event listener for the calculator in the Tools tab
+        if (calcButtonTool) {
+             calcButtonTool.addEventListener('click', calculateFactorTool);
+        }
+        // Set initial value and calculate on load for the Tools tab calculator
+        if (sqftInputTool) {
+             sqftInputTool.value = "3700"; // Set default value for the Tool tab instance
+             window.addEventListener('load', calculateFactorTool);
+        }
+
+
+        // --- Weather Fetching (Also needs unique IDs for the Tools tab) ---
+        const apiKey = '9739554d932c49a9c37407d5aa8e5857'; // Default Key
+        const city = 'Salt Lake City'; // Default Location
+        const countryCode = 'US';
+        const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city},${countryCode}&appid=${apiKey}&units=imperial`;
+
+        const weatherLocationElementTool = document.getElementById('weather-location-tool');
+        const weatherContentElementTool = document.getElementById('weather-content-tool');
+
+        async function fetchWeatherTool() {
+             const locationEl = weatherLocationElementTool; // Use specific element
+             const contentEl = weatherContentElementTool;   // Use specific element
+
+             if (!locationEl || !contentEl) return; // Don't run if elements aren't found
+
+            if (!apiKey || apiKey.includes('YOUR_API_KEY')) {
+                 contentEl.innerHTML = '<p class="weather-error">Error: API key missing/invalid.</p>';
+                 locationEl.textContent = 'Error'; return;
+            }
+            try {
+                const response = await fetch(weatherApiUrl);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 401) { throw new Error(`API Error (401): ${errorData.message || 'Invalid API key'}. If key is new, wait ~2 hours for activation.`); }
+                    else { throw new Error(`API Error (${response.status}): ${errorData.message || 'Could not fetch weather data'}`); }
+                }
+                const data = await response.json();
+                displayWeatherTool(data); // Call the specific display function
+            } catch (error) {
+                console.error("Weather fetch error:", error);
+                 const errorMsg = error.message.includes("wait ~2 hours for activation")
+                               ? `<p class="weather-error-activation">${error.message}</p>`
+                               : `<p class="weather-error">Could not fetch weather data: ${error.message}.</p>`;
+                 contentEl.innerHTML = errorMsg;
+                 locationEl.textContent = 'Error';
+            }
+        }
+
+        function displayWeatherTool(data) {
+            const locationEl = weatherLocationElementTool;
+            const contentEl = weatherContentElementTool;
+
+             if (!data || !data.main || !data.weather || !data.wind) {
+                 contentEl.innerHTML = '<p class="weather-error">Incomplete weather data received.</p>';
+                 locationEl.textContent = 'Error'; console.error("Incomplete data:", data); return;
+             }
+             const locationName = data.name || 'Your Location';
+             const temperature = Math.round(data.main.temp);
+             const feelsLike = Math.round(data.main.feels_like);
+             const description = data.weather[0].description;
+             const iconCode = data.weather[0].icon;
+             const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
+             const windSpeed = Math.round(data.wind.speed);
+             const humidity = data.main.humidity;
+
+             locationEl.textContent = locationName;
+             contentEl.innerHTML = `
+                 <div class="weather-data">
+                     <span><img src="${iconUrl}" alt="${description}" width="30" height="30"> <strong>${temperature}°F</strong> (${description})</span>
+                     <span>Feels like: ${feelsLike}°F</span>
+                     <span>Wind: ${windSpeed} mph</span>
+                     <span>Humidity: ${humidity}%</span>
+                     ${data.rain && data.rain['1h'] ? `<span>Rain (last 1h): ${data.rain['1h']} mm</span>` : ''}
+                 </div>`;
+        }
+
+        // Fetch weather on load for the Tools tab instance
+         window.addEventListener('load', fetchWeatherTool);
+
+    </script>
+    <!-- ****** END JAVASCRIPT ****** -->
+
+</body>
+</html>

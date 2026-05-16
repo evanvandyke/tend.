@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tend. — Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #2D5235;
+  --forest-dark: #25422C;
+  --bordeaux: #7A2E1F;
+  --bordeaux-dark: #5F2517;
+  --iron-gall: #1F1812;
+  --mustard: #A87C2D;
+  --slate: #4A554E;
+
+  --parchment: #F2E8CF;
+  --aged-paper: #FAF3DE;
+  --vellum: #FCF7E8;
+
+  --text-primary: #1F1812;
+  --text-secondary: #6B5D45;
+  --text-tertiary: #9C8E70;
+
+  --hairline: #C5B89D;
+  --engraved: #8A7B5C;
+
+  --shadow-1: 0 1px 2px rgba(31, 24, 18, 0.06);
+  --shadow-2: 0 2px 6px rgba(31, 24, 18, 0.08);
+  --shadow-3: 0 4px 12px rgba(31, 24, 18, 0.10);
+  --shadow-4: 0 8px 20px rgba(31, 24, 18, 0.12);
+  --shadow-fab: 0 4px 14px rgba(45, 82, 53, 0.32);
+
+  --font-display: 'EB Garamond', Georgia, serif;
+  --font-body: 'Lora', 'EB Garamond', Georgia, serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background:
+    radial-gradient(ellipse at 50% 0%, #3D2F20 0%, #221912 70%);
+  min-height: 100vh;
+}
+
+/* Subtle paper noise overlay on page bg */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px 32px 96px;
+}
+
+/* === HEADER === */
+.preview-header {
+  text-align: center;
+  margin-bottom: 56px;
+  color: var(--parchment);
+}
+
+.preview-header .wordmark {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.preview-header .wordmark .period { color: var(--bordeaux); }
+
+.preview-header .tagline {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(242, 232, 207, 0.75);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.preview-header .subtitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: rgba(242, 232, 207, 0.4);
+  margin-top: 24px;
+}
+
+/* === LAYOUT === */
+.preview-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .preview-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+/* === PHONE FRAME === */
+.phone {
+  width: 390px;
+  height: 844px;
+  background: var(--parchment);
+  border-radius: 44px;
+  padding: 12px;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.4),
+    0 0 0 12px #1A1410,
+    0 0 0 13px #3D2F20,
+    0 40px 80px rgba(0,0,0,0.5),
+    0 20px 40px rgba(0,0,0,0.3);
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--parchment);
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  /* Paper grain on screen */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.15  0 0 0 0 0.08  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+
+/* iPhone notch */
+.phone-screen::before {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 30px;
+  background: #1A1410;
+  border-radius: 20px;
+  z-index: 100;
+}
+
+/* === STATUS BAR === */
+.status-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  font-family: 'SF Pro Display', -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--iron-gall);
+  padding-top: 12px;
+}
+
+.status-bar .icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* === TOP BAR === */
+.top-bar {
+  height: 56px;
+  padding: 8px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-bar .wordmark {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--iron-gall);
+  line-height: 1;
+}
+.top-bar .wordmark .period { color: var(--bordeaux); }
+
+.top-bar .date {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  line-height: 1.3;
+  font-style: italic;
+}
+.top-bar .date strong {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--iron-gall);
+  display: block;
+  font-size: 13px;
+}
+
+/* === SCROLL CONTENT === */
+.feed {
+  padding: 8px 0 100px;
+  overflow-y: auto;
+  height: calc(100% - 100px - 64px);
+}
+
+/* === SECTION HEADER === */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 8px;
+}
+.section-header .label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-secondary);
+}
+.section-header .flourish {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--hairline), transparent);
+  position: relative;
+}
+.section-header .flourish::after {
+  content: '·';
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-60%);
+  color: var(--hairline);
+  font-size: 16px;
+}
+
+/* === TASK ROW === */
+.task {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 0.5px solid var(--hairline);
+  cursor: pointer;
+  transition: background 80ms ease-out;
+}
+.task:hover { background: var(--aged-paper); }
+
+.task .checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--hairline);
+  background: transparent;
+  margin-top: 2px;
+  transition: all 150ms ease-out;
+}
+.task.priority-high .checkbox { border-color: var(--bordeaux); }
+.task.complete .checkbox {
+  background: var(--forest);
+  border-color: var(--forest);
+  position: relative;
+}
+.task.complete .checkbox::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--vellum);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.task .content {
+  flex: 1;
+  min-width: 0;
+}
+.task .title {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  font-weight: 400;
+  color: var(--iron-gall);
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.task.complete .title {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.task .meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.task .date-pill {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+.task .date-pill.today { color: var(--forest); font-weight: 500; }
+.task .date-pill.overdue { color: var(--bordeaux); font-weight: 500; }
+.task .date-pill.urgent { color: var(--mustard); font-weight: 500; }
+
+.module-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-secondary);
+}
+.module-tag .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.module-tag.lawn .dot { background: var(--forest); }
+.module-tag.garden .dot { background: var(--mustard); }
+.module-tag.project .dot { background: var(--bordeaux); }
+.module-tag.lunar .dot { background: var(--slate); }
+
+/* === PROJECT CARD === */
+.projects-strip {
+  padding: 8px 20px 0;
+}
+.project-card {
+  background: var(--aged-paper);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 14px 14px 12px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-1);
+}
+.project-card .title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--iron-gall);
+  margin-bottom: 4px;
+}
+.project-card .sub {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.progress-bar {
+  height: 3px;
+  background: var(--hairline);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar .fill {
+  height: 100%;
+  background: var(--forest);
+  border-radius: 2px;
+}
+.project-card .footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.project-card .percent {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+}
+
+/* === FAB === */
+.fab {
+  position: absolute;
+  bottom: 84px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--vellum);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-fab);
+  transition: all 150ms ease-out;
+  z-index: 50;
+}
+.fab:hover {
+  box-shadow: 0 6px 18px rgba(45, 82, 53, 0.40);
+}
+.fab:active {
+  transform: scale(0.94);
+}
+.fab span { margin-top: -4px; }
+
+/* === BOTTOM NAV === */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--vellum);
+  border-top: 0.5px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 12px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+.nav-tab.active { color: var(--iron-gall); }
+.nav-tab.active svg { color: var(--forest); }
+.nav-tab .label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* === STYLE GUIDE === */
+.style-guide {
+  color: var(--parchment);
+  max-width: 720px;
+}
+
+.style-guide h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--parchment);
+  margin-bottom: 8px;
+}
+
+.style-guide .subtitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: rgba(242, 232, 207, 0.6);
+  margin-bottom: 32px;
+  font-size: 15px;
+}
+
+.sg-section {
+  margin-bottom: 40px;
+}
+.sg-section h3 {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: rgba(242, 232, 207, 0.5);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid rgba(242, 232, 207, 0.15);
+}
+
+/* Color swatches */
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.swatch {
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+}
+.swatch .chip {
+  height: 64px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.swatch .info {
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+}
+.swatch .name {
+  color: var(--parchment);
+  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 12px;
+}
+.swatch .hex {
+  color: rgba(242, 232, 207, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+}
+
+/* Typography samples */
+.type-sample {
+  background: var(--parchment);
+  border-radius: 4px;
+  padding: 24px;
+  color: var(--iron-gall);
+  margin-bottom: 12px;
+}
+.type-sample .label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.type-display {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+.type-display .period { color: var(--bordeaux); }
+.type-h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.type-body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.type-body em { color: var(--text-secondary); }
+.type-overline {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-secondary);
+}
+
+/* Component samples */
+.comp-grid {
+  background: var(--parchment);
+  border-radius: 4px;
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+}
+
+.comp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 10px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  min-height: 44px;
+  transition: all 150ms ease-out;
+}
+.btn-primary {
+  background: var(--forest);
+  color: var(--vellum);
+  box-shadow: var(--shadow-1);
+}
+.btn-primary:hover { background: var(--forest-dark); }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--engraved);
+  color: var(--iron-gall);
+}
+.btn-destructive {
+  background: var(--bordeaux);
+  color: var(--vellum);
+}
+.btn-tertiary {
+  background: transparent;
+  color: var(--forest);
+  text-decoration: underline;
+  text-decoration-color: var(--hairline);
+  text-underline-offset: 3px;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-family: var(--font-body);
+}
+
+.fab-mini {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--vellum);
+  border: none;
+  font-family: var(--font-display);
+  font-size: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-fab);
+  cursor: pointer;
+}
+.fab-mini span { margin-top: -4px; }
+
+.input-sample {
+  background: var(--vellum);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--iron-gall);
+  width: 280px;
+  outline: none;
+  transition: border 150ms ease-out;
+}
+.input-sample:focus { border-color: var(--forest); border-width: 2px; padding: 11px 13px; }
+.input-sample::placeholder { color: var(--text-tertiary); font-style: italic; }
+
+.comp-label {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-secondary);
+  width: 100%;
+  margin-bottom: -8px;
+}
+
+/* Signature note callouts */
+.signature-note {
+  background: rgba(242, 232, 207, 0.06);
+  border-left: 2px solid var(--mustard);
+  padding: 14px 18px;
+  margin-top: 24px;
+  border-radius: 0 4px 4px 0;
+}
+.signature-note .head {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--mustard);
+  margin-bottom: 6px;
+}
+.signature-note .body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(242, 232, 207, 0.85);
+}
+.signature-note .body code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: rgba(0,0,0,0.25);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--parchment);
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="preview-header">
+    <div class="wordmark">Tend<span class="period">.</span></div>
+    <div class="tagline">An almanac for the home.</div>
+    <div class="subtitle">Design Preview · Version 1</div>
+  </header>
+
+  <div class="preview-grid">
+
+    <!-- PHONE MOCKUP -->
+    <div class="phone">
+      <div class="phone-screen">
+
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><path d="M1 8a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V8Zm5-2a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6Zm5-3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3Zm5-2a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h0a1 1 0 0 1-1-1V1Z"/></svg>
+            <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="1" y="2" width="18" height="7" rx="2" stroke="currentColor" stroke-width="1"/><rect x="3" y="4" width="14" height="3" rx="1" fill="currentColor"/><rect x="20" y="4" width="1.5" height="3" rx="0.5" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="top-bar">
+          <div class="wordmark">Tend<span class="period">.</span></div>
+          <div class="date">
+            <em>Saturday</em>
+            <strong>16 May</strong>
+          </div>
+        </div>
+
+        <div class="feed">
+
+          <div class="section-header">
+            <span class="label">This Week</span>
+            <span class="flourish"></span>
+          </div>
+
+          <div class="task priority-high">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Apply late-spring fertilizer</div>
+              <div class="meta">
+                <span class="date-pill urgent">Due this week</span>
+                <span class="module-tag lawn"><span class="dot"></span>Lawn</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Mow this weekend (3.5" height)</div>
+              <div class="meta">
+                <span class="date-pill today">Today or tomorrow</span>
+                <span class="module-tag lawn"><span class="dot"></span>Lawn · Weekly</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Transplant tomatoes outside</div>
+              <div class="meta">
+                <span class="date-pill">Frost passed 5/15</span>
+                <span class="module-tag garden"><span class="dot"></span>Garden</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Stain back fence</div>
+              <div class="meta">
+                <span class="date-pill">Saturday block · 4hr</span>
+                <span class="module-tag project"><span class="dot"></span>Project</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task complete">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Fix Lincoln's bathroom door handle</div>
+              <div class="meta">
+                <span class="date-pill">Done · 15 min</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <span class="label">Coming Up</span>
+            <span class="flourish"></span>
+          </div>
+
+          <div class="task">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Apply summer fertilizer</div>
+              <div class="meta">
+                <span class="date-pill">Late June</span>
+                <span class="module-tag lawn"><span class="dot"></span>Lawn</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task">
+            <div class="checkbox"></div>
+            <div class="content">
+              <div class="title">Full Moon — Flower Moon</div>
+              <div class="meta">
+                <span class="date-pill">Tonight</span>
+                <span class="module-tag lunar"><span class="dot"></span>Lunar Event</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <span class="label">Open Projects</span>
+            <span class="flourish"></span>
+          </div>
+
+          <div class="projects-strip">
+            <div class="project-card">
+              <div class="title">Stain back fence</div>
+              <div class="sub">Started 3 weeks ago · materials on hand</div>
+              <div class="progress-bar"><div class="fill" style="width: 60%;"></div></div>
+              <div class="footer">
+                <span class="percent">60% Complete</span>
+                <span class="module-tag project"><span class="dot"></span>Project</span>
+              </div>
+            </div>
+            <div class="project-card">
+              <div class="title">Bonus room paint</div>
+              <div class="sub">Not yet started · paint selected</div>
+              <div class="progress-bar"><div class="fill" style="width: 0%;"></div></div>
+              <div class="footer">
+                <span class="percent">Ready to start</span>
+                <span class="module-tag project"><span class="dot"></span>Project</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="fab" aria-label="Add task"><span>+</span></button>
+
+        <div class="bottom-nav">
+          <div class="nav-tab active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="14" width="4" height="4" rx="0.5" fill="currentColor"/></svg>
+            <span class="label">Now</span>
+          </div>
+          <div class="nav-tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2V4z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8V4z"/></svg>
+            <span class="label">Browse</span>
+          </div>
+          <div class="nav-tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span class="label">Projects</span>
+          </div>
+          <div class="nav-tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13H2.5A8.5 8.5 0 0 0 11 21.5V20zm0-6a3 3 0 0 1-3-3H6.5A4.5 4.5 0 0 0 11 15.5V14zm9.96-7.04A10 10 0 0 0 12 4c-5 0-9.06 3.66-9.93 8.45.16.36.36.7.6 1.03A8.99 8.99 0 0 1 12 6a8.99 8.99 0 0 1 8.96 8.04c.24-.32.44-.67.6-1.03A10 10 0 0 0 20.96 6.96z"/><path d="M12 2v20"/></svg>
+            <span class="label">Modules</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STYLE GUIDE -->
+    <div class="style-guide">
+      <h2>The Almanac, Applied</h2>
+      <div class="subtitle">Three signature details, then the system.</div>
+
+      <div class="signature-note">
+        <div class="head">Signature 1 · The FAB Shadow</div>
+        <div class="body">The floating add button casts a <strong>tinted forest-green shadow</strong>, not a generic black one. <code>box-shadow: 0 4px 14px rgba(45, 82, 53, 0.32)</code>. This is one of the most-copied details in productivity design — borrowed from Todoist's tinted red FAB.</div>
+      </div>
+
+      <div class="signature-note">
+        <div class="head">Signature 2 · The Bordeaux Period</div>
+        <div class="body">In the wordmark <em>Tend.</em>, the period is always rendered in Bordeaux <code>#7A2E1F</code>. A single deliberate flick of color in an otherwise serene mark.</div>
+      </div>
+
+      <div class="signature-note">
+        <div class="head">Signature 3 · Serif Throughout</div>
+        <div class="body">EB Garamond for display, Lora for body. No sans-serif anywhere in the app. Most productivity apps avoid serifs on phones; Tend. earns readability through size and line-height and gains identity in return.</div>
+      </div>
+
+      <div class="sg-section" style="margin-top: 48px;">
+        <h3>Color System</h3>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#F2E8CF"></div><div class="info"><div class="name">Parchment</div><div class="hex">#F2E8CF</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#FAF3DE"></div><div class="info"><div class="name">Aged Paper</div><div class="hex">#FAF3DE</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#FCF7E8"></div><div class="info"><div class="name">Vellum</div><div class="hex">#FCF7E8</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#2D5235"></div><div class="info"><div class="name">Forest</div><div class="hex">#2D5235</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#7A2E1F"></div><div class="info"><div class="name">Bordeaux</div><div class="hex">#7A2E1F</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#1F1812"></div><div class="info"><div class="name">Iron Gall</div><div class="hex">#1F1812</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#A87C2D"></div><div class="info"><div class="name">Mustard</div><div class="hex">#A87C2D</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#4A554E"></div><div class="info"><div class="name">Slate</div><div class="hex">#4A554E</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#6B5D45"></div><div class="info"><div class="name">Sepia</div><div class="hex">#6B5D45</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#9C8E70"></div><div class="info"><div class="name">Faded Ink</div><div class="hex">#9C8E70</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#C5B89D"></div><div class="info"><div class="name">Hairline</div><div class="hex">#C5B89D</div></div></div>
+          <div class="swatch"><div class="chip" style="background:#8A7B5C"></div><div class="info"><div class="name">Engraved</div><div class="hex">#8A7B5C</div></div></div>
+        </div>
+      </div>
+
+      <div class="sg-section">
+        <h3>Typography</h3>
+        <div class="type-sample">
+          <span class="label">Display · EB Garamond 42</span>
+          <div class="type-display">Tend<span class="period">.</span></div>
+        </div>
+        <div class="type-sample">
+          <span class="label">H1 · EB Garamond 32</span>
+          <div class="type-h1">An almanac for the home</div>
+        </div>
+        <div class="type-sample">
+          <span class="label">Body · Lora 16</span>
+          <div class="type-body">Apply late-spring fertilizer this week, before the soil temperature rises past 70°F. <em>A balanced fast-release feed will carry the lawn into June.</em></div>
+        </div>
+        <div class="type-sample">
+          <span class="label">Overline · EB Garamond 11 · Small Caps</span>
+          <div class="type-overline">This Week · Coming Up · Open Projects</div>
+        </div>
+      </div>
+
+      <div class="sg-section">
+        <h3>Components</h3>
+        <div class="comp-grid">
+          <div>
+            <div class="comp-label">Buttons</div>
+            <div class="comp-row" style="margin-top: 12px;">
+              <button class="btn btn-primary">Add Task</button>
+              <button class="btn btn-secondary">Cancel</button>
+              <button class="btn btn-destructive">Delete</button>
+              <button class="btn btn-tertiary">Skip for now</button>
+            </div>
+          </div>
+          <div>
+            <div class="comp-label">Floating Add Button (Signature)</div>
+            <div class="comp-row" style="margin-top: 12px;">
+              <button class="fab-mini"><span>+</span></button>
+            </div>
+          </div>
+          <div>
+            <div class="comp-label">Text Input</div>
+            <div class="comp-row" style="margin-top: 12px;">
+              <input type="text" class="input-sample" placeholder="Take out the trash today...">
+            </div>
+          </div>
+          <div>
+            <div class="comp-label">Module Tags</div>
+            <div class="comp-row" style="margin-top: 12px;">
+              <span class="module-tag lawn"><span class="dot"></span>Lawn</span>
+              <span class="module-tag garden"><span class="dot"></span>Garden</span>
+              <span class="module-tag project"><span class="dot"></span>Project</span>
+              <span class="module-tag lunar"><span class="dot"></span>Lunar Event</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

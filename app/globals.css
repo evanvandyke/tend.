@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+:root {
+  --forest: #2D5235;
+  --forest-dark: #25422C;
+  --bordeaux: #7A2E1F;
+  --bordeaux-dark: #5F2517;
+  --iron-gall: #1F1812;
+  --mustard: #A87C2D;
+  --slate: #4A554E;
+  --parchment: #F2E8CF;
+  --aged-paper: #FAF3DE;
+  --vellum: #FCF7E8;
+  --text-primary: #1F1812;
+  --text-secondary: #6B5D45;
+  --text-tertiary: #9C8E70;
+  --hairline: #C5B89D;
+  --engraved: #8A7B5C;
+  --success: #2D5235;
+  --error: #7A2E1F;
+  --warning: #A87C2D;
+  --info: #4A554E;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 50%;
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px rgba(31, 24, 18, 0.06);
+  --shadow-2: 0 2px 6px rgba(31, 24, 18, 0.08);
+  --shadow-3: 0 4px 12px rgba(31, 24, 18, 0.10);
+  --shadow-4: 0 8px 20px rgba(31, 24, 18, 0.12);
+  --shadow-fab: 0 4px 14px rgba(45, 82, 53, 0.32);
+  --transition-fast: 150ms ease-out;
+  --transition-base: 250ms ease-out;
+  --transition-slow: 400ms ease-out;
+  --font-display: 'EB Garamond', Georgia, serif;
+  --font-body: 'Lora', 'EB Garamond', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  --font-size-display: 42px;
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
+  --font-size-h3: 19px;
+  --font-size-h4: 16px;
+  --font-size-body-lg: 18px;
+  --font-size-body: 16px;
+  --font-size-body-sm: 14px;
+  --font-size-caption: 12px;
+  --font-size-overline: 11px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+@theme inline {
+  --color-background: var(--parchment);
+  --color-foreground: var(--iron-gall);
+  --color-forest: var(--forest);
+  --color-bordeaux: var(--bordeaux);
+  --color-mustard: var(--mustard);
+  --color-slate: var(--slate);
+  --color-parchment: var(--parchment);
+  --color-aged-paper: var(--aged-paper);
+  --color-vellum: var(--vellum);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+body {
+  background: var(--parchment);
+  color: var(--iron-gall);
+  font-family: var(--font-body);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--engraved);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

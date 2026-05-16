@@ -1,0 +1,476 @@
+[
+  {
+    "eventDate": "2026-01-03T20:15:56.784Z",
+    "eventType": "full_moon",
+    "name": "Wolf Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-02-02T08:59:59.760Z",
+    "eventType": "full_moon",
+    "name": "Snow Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-02-17T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Partial Solar Eclipse",
+    "description": "Partial solar eclipse visible from parts of the Southern Hemisphere"
+  },
+  {
+    "eventDate": "2026-03-03T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2026-03-03T21:44:02.736Z",
+    "eventType": "full_moon",
+    "name": "Worm Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-04-02T10:28:05.712Z",
+    "eventType": "full_moon",
+    "name": "Pink Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-05-01T23:12:08.688Z",
+    "eventType": "full_moon",
+    "name": "Flower Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-05-31T11:56:11.664Z",
+    "eventType": "supermoon",
+    "name": "Blue Moon (Flower Moon)",
+    "description": "Supermoon, Blue Moon"
+  },
+  {
+    "eventDate": "2026-06-30T00:40:14.640Z",
+    "eventType": "supermoon",
+    "name": "Strawberry Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2026-07-29T13:24:17.616Z",
+    "eventType": "supermoon",
+    "name": "Buck Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2026-08-12T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Annular Solar Eclipse",
+    "description": "Annular solar eclipse"
+  },
+  {
+    "eventDate": "2026-08-28T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2026-08-28T02:08:20.592Z",
+    "eventType": "supermoon",
+    "name": "Sturgeon Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2026-09-26T14:52:23.568Z",
+    "eventType": "full_moon",
+    "name": "Harvest Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-10-26T03:36:26.543Z",
+    "eventType": "full_moon",
+    "name": "Hunter's Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-11-24T16:20:29.520Z",
+    "eventType": "full_moon",
+    "name": "Beaver Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2026-12-24T05:04:32.496Z",
+    "eventType": "full_moon",
+    "name": "Cold Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-01-22T17:48:35.472Z",
+    "eventType": "full_moon",
+    "name": "Wolf Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-02-20T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2027-02-21T06:32:38.448Z",
+    "eventType": "full_moon",
+    "name": "Snow Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-03-22T19:16:41.424Z",
+    "eventType": "full_moon",
+    "name": "Worm Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-04-21T08:00:44.400Z",
+    "eventType": "full_moon",
+    "name": "Pink Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-05-20T20:44:47.376Z",
+    "eventType": "full_moon",
+    "name": "Flower Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-06-19T09:28:50.352Z",
+    "eventType": "supermoon",
+    "name": "Strawberry Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2027-07-18T22:12:53.328Z",
+    "eventType": "supermoon",
+    "name": "Buck Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2027-08-02T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Total Solar Eclipse",
+    "description": "Total solar eclipse"
+  },
+  {
+    "eventDate": "2027-08-17T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Partial Lunar Eclipse",
+    "description": "Partial lunar eclipse"
+  },
+  {
+    "eventDate": "2027-08-17T10:56:56.303Z",
+    "eventType": "supermoon",
+    "name": "Sturgeon Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2027-09-15T23:40:59.280Z",
+    "eventType": "supermoon",
+    "name": "Harvest Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2027-10-15T12:25:02.256Z",
+    "eventType": "full_moon",
+    "name": "Hunter's Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-11-14T01:09:05.232Z",
+    "eventType": "full_moon",
+    "name": "Beaver Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2027-12-13T13:53:08.208Z",
+    "eventType": "full_moon",
+    "name": "Cold Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-01-12T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2028-01-12T02:37:11.184Z",
+    "eventType": "full_moon",
+    "name": "Wolf Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-01-26T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Annular Solar Eclipse",
+    "description": "Annular solar eclipse"
+  },
+  {
+    "eventDate": "2028-02-10T15:21:14.160Z",
+    "eventType": "full_moon",
+    "name": "Snow Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-03-11T04:05:17.135Z",
+    "eventType": "full_moon",
+    "name": "Worm Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-04-09T16:49:20.112Z",
+    "eventType": "full_moon",
+    "name": "Pink Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-05-09T05:33:23.088Z",
+    "eventType": "full_moon",
+    "name": "Flower Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-06-07T18:17:26.064Z",
+    "eventType": "full_moon",
+    "name": "Strawberry Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-07-06T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2028-07-07T07:01:29.040Z",
+    "eventType": "full_moon",
+    "name": "Buck Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-07-22T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Total Solar Eclipse",
+    "description": "Total solar eclipse"
+  },
+  {
+    "eventDate": "2028-08-05T19:45:32.016Z",
+    "eventType": "full_moon",
+    "name": "Sturgeon Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-09-04T08:29:34.992Z",
+    "eventType": "full_moon",
+    "name": "Corn Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-10-03T21:13:37.968Z",
+    "eventType": "full_moon",
+    "name": "Harvest Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-11-02T09:57:40.944Z",
+    "eventType": "full_moon",
+    "name": "Beaver Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-12-01T22:41:43.920Z",
+    "eventType": "full_moon",
+    "name": "Cold Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2028-12-31T11:25:46.896Z",
+    "eventType": "full_moon",
+    "name": "Blue Moon (Cold Moon)",
+    "description": "Blue Moon"
+  },
+  {
+    "eventDate": "2029-01-14T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Partial Solar Eclipse",
+    "description": "Partial solar eclipse"
+  },
+  {
+    "eventDate": "2029-01-30T00:09:49.872Z",
+    "eventType": "full_moon",
+    "name": "Wolf Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-02-28T12:53:52.848Z",
+    "eventType": "full_moon",
+    "name": "Snow Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-03-30T01:37:55.824Z",
+    "eventType": "full_moon",
+    "name": "Worm Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-04-28T14:21:58.800Z",
+    "eventType": "supermoon",
+    "name": "Pink Moon",
+    "description": "Supermoon"
+  },
+  {
+    "eventDate": "2029-05-28T03:06:01.776Z",
+    "eventType": "full_moon",
+    "name": "Flower Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-06-26T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2029-06-26T15:50:04.752Z",
+    "eventType": "full_moon",
+    "name": "Strawberry Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-07-26T04:34:07.727Z",
+    "eventType": "full_moon",
+    "name": "Buck Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-08-24T17:18:10.704Z",
+    "eventType": "full_moon",
+    "name": "Sturgeon Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-09-23T06:02:13.680Z",
+    "eventType": "full_moon",
+    "name": "Harvest Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-10-22T18:46:16.656Z",
+    "eventType": "full_moon",
+    "name": "Hunter's Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-11-21T07:30:19.632Z",
+    "eventType": "full_moon",
+    "name": "Beaver Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2029-12-20T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2029-12-20T20:14:22.608Z",
+    "eventType": "full_moon",
+    "name": "Cold Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-01-19T08:58:25.584Z",
+    "eventType": "full_moon",
+    "name": "Wolf Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-02-17T21:42:28.560Z",
+    "eventType": "full_moon",
+    "name": "Snow Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-03-19T10:26:31.536Z",
+    "eventType": "full_moon",
+    "name": "Worm Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-04-17T23:10:34.512Z",
+    "eventType": "full_moon",
+    "name": "Pink Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-05-17T11:54:37.488Z",
+    "eventType": "full_moon",
+    "name": "Flower Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-06-01T00:00:00.000Z",
+    "eventType": "solar_eclipse",
+    "name": "Annular Solar Eclipse",
+    "description": "Annular solar eclipse"
+  },
+  {
+    "eventDate": "2030-06-15T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2030-06-16T00:38:40.464Z",
+    "eventType": "full_moon",
+    "name": "Strawberry Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-07-15T13:22:43.440Z",
+    "eventType": "full_moon",
+    "name": "Buck Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-08-14T02:06:46.416Z",
+    "eventType": "full_moon",
+    "name": "Sturgeon Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-09-12T14:50:49.392Z",
+    "eventType": "full_moon",
+    "name": "Harvest Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-10-12T03:34:52.368Z",
+    "eventType": "full_moon",
+    "name": "Hunter's Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-11-10T16:18:55.344Z",
+    "eventType": "full_moon",
+    "name": "Beaver Moon",
+    "description": null
+  },
+  {
+    "eventDate": "2030-12-09T00:00:00.000Z",
+    "eventType": "lunar_eclipse",
+    "name": "Total Lunar Eclipse",
+    "description": "Total lunar eclipse"
+  },
+  {
+    "eventDate": "2030-12-10T05:02:58.320Z",
+    "eventType": "full_moon",
+    "name": "Cold Moon",
+    "description": null
+  }
+]

@@ -9,6 +9,7 @@ const createCompletionSchema = z.object({
   moduleSlug: z.string().min(1, 'Module slug is required'),
   taskSlug: z.string().min(1, 'Task slug is required'),
   year: z.number().int().min(2000).max(2100),
+  status: z.enum(['completed', 'skipped']).optional().default('completed'),
 });
 
 export async function GET(request: NextRequest) {
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { moduleSlug, taskSlug, year } = parsed.data;
+    const { moduleSlug, taskSlug, year, status } = parsed.data;
 
     const [completion] = await db
       .insert(userModuleCompletions)
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
         moduleSlug,
         taskSlug,
         year,
+        status,
       })
       .returning();
 

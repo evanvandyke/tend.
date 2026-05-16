@@ -14,15 +14,9 @@ interface SettingsUser {
 
 interface SettingsClientProps {
   user: SettingsUser;
-  enabledModules: string[];
 }
 
-const ALL_MODULES = [
-  { slug: 'lawn-utah', label: 'Lawn (Utah)' },
-  { slug: 'garden', label: 'Garden' },
-];
-
-export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
+export function SettingsClient({ user }: SettingsClientProps) {
   const { isSupported, isSubscribed, permission, subscribe } = usePushSubscription();
   const [pushEnabled, setPushEnabled] = useState(user.pushNotificationsEnabled);
   const [isPending, startTransition] = useTransition();
@@ -155,37 +149,6 @@ export function SettingsClient({ user, enabledModules }: SettingsClientProps) {
         )}
       </div>
 
-      {/* Modules Section */}
-      <SectionHeader title="Modules" />
-
-      <div className="space-y-2 mt-2">
-        {ALL_MODULES.map((mod) => (
-          <div
-            key={mod.slug}
-            className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-lg border border-[var(--hairline)]"
-          >
-            <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--iron-gall)]">
-              {mod.label}
-            </p>
-            <span
-              className={`font-[family-name:var(--font-body)] text-[12px] px-2 py-0.5 rounded-full ${
-                enabledModules.includes(mod.slug)
-                  ? 'bg-[var(--sage)]/20 text-[var(--sage)]'
-                  : 'bg-[var(--hairline)] text-[var(--sepia)]'
-              }`}
-            >
-              {enabledModules.includes(mod.slug) ? 'Enabled' : 'Disabled'}
-            </span>
-          </div>
-        ))}
-        <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--sepia)] px-4 pt-1">
-          Manage modules from the{' '}
-          <a href="/modules" className="underline text-[var(--bordeaux)]">
-            Modules
-          </a>{' '}
-          page.
-        </p>
-      </div>
 
       {/* Account Section */}
       <SectionHeader title="Account" />

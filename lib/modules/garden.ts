@@ -319,7 +319,7 @@ export async function computeGardenTasks(
       // Beyond 30 days past, the task is no longer actionable (season moved on).
       const daysUntil = differenceInDays(taskDate, todayStart);
       if (daysUntil > 14) continue;
-      if (daysUntil < -30) continue;
+      if (daysUntil < -120) continue;
 
       tasks.push({
         source: 'garden',

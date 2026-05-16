@@ -7,6 +7,7 @@ import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
 import { ProjectCard } from '@/components/project-card';
 import { SeasonalIndicator } from '@/components/seasonal-indicator';
 import { TaskEditSheet } from '@/components/task-edit-sheet';
+import { ModuleTaskActionSheet } from '@/components/module-task-action-sheet';
 import type { CompletionAnimState } from '@/components/task-row';
 
 export interface ProjectData {
@@ -47,6 +48,7 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
     doneToday: true,
   });
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [moduleActionItem, setModuleActionItem] = useState<NowFeedItemData | null>(null);
 
   // Track animation states per task
   const [animStates, setAnimStates] = useState<Record<string, CompletionAnimState>>({});
@@ -65,8 +67,12 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
   const handleTaskPress = useCallback((id: string, type: NowFeedItemData['type']) => {
     if (type === 'user-task') {
       setEditingTaskId(id);
+    } else if (type === 'module-task' || type === 'garden-task') {
+      const allItems = [...thisWeek, ...comingUp];
+      const item = allItems.find(i => i.id === id);
+      if (item) setModuleActionItem(item);
     }
-  }, []);
+  }, [thisWeek, comingUp]);
 
   const executeCompletion = useCallback(async (id: string, type: NowFeedItemData['type']) => {
     try {
@@ -302,6 +308,13 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
         onClose={() => setEditingTaskId(null)}
         onSaved={() => router.refresh()}
         onDeleted={() => router.refresh()}
+      />
+
+      <ModuleTaskActionSheet
+        open={moduleActionItem !== null}
+        item={moduleActionItem}
+        onClose={() => setModuleActionItem(null)}
+        onCompleted={() => router.refresh()}
       />
     </>
   );

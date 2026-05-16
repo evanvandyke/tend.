@@ -20,6 +20,7 @@ function feedItemToClientData(item: FeedItem): NowFeedItemData {
     id: item.type === 'user-task' ? String(item.taskId) : item.id,
     type: item.type,
     title: item.title,
+    content: item.content,
     dueDate: toISODateString(item.dueAt),
     isCompleted: item.isCompleted,
     moduleSource: item.moduleTag === 'lunar-event' ? undefined : item.moduleTag,

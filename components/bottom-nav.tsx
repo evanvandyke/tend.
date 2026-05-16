@@ -15,7 +15,7 @@ const navItems: NavItem[] = [
   { label: 'Now', href: '/now', icon: CalendarDays },
   { label: 'Browse', href: '/browse', icon: BookOpen },
   { label: 'Projects', href: '/projects', icon: Hammer },
-  { label: 'Modules', href: '/modules', icon: Leaf },
+  { label: 'Routines', href: '/modules', icon: Leaf },
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
 

@@ -74,6 +74,7 @@ export const userModuleCompletions = pgTable('user_module_completions', {
   moduleSlug: text('module_slug').notNull(),
   taskSlug: text('task_slug').notNull(),
   year: integer('year').notNull(),
+  status: text('status').notNull().default('completed'), // 'completed' | 'skipped'
   completedAt: timestamp('completed_at').defaultNow().notNull(),
 });
 

@@ -15,6 +15,7 @@ export interface NowFeedItemData {
   id: string;
   type: NowFeedItemType;
   title: string;
+  content?: string;
   dueDate?: string;
   isCompleted?: boolean;
   moduleSource?: 'lawn' | 'garden' | 'project' | 'task';

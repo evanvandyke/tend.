@@ -13,7 +13,7 @@ export default async function ModulesPage() {
       <main className="flex-1 pb-20">
         <div className="px-4 pt-6 pb-2">
           <h2 className="font-[family-name:var(--font-display)] text-[22px] font-semibold text-[var(--iron-gall)]">
-            Modules
+            Routines
           </h2>
           <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--sepia)] mt-1">
             Seasonal care schedules tailored to your location.

@@ -1,0 +1,1 @@
+ALTER TABLE "user_module_completions" ADD COLUMN "status" text DEFAULT 'completed' NOT NULL;

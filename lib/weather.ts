@@ -39,16 +39,22 @@ async function fetchTomorrowForecast(zip: string): Promise<WeatherForecastTomorr
     if (!res.ok) return null;
 
     const data = await res.json();
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    // Group all forecast entries by date, then pick the SECOND day
+    // (first day is today/tonight, second is tomorrow)
+    const entriesByDate: Record<string, Array<{ main: { temp_max: number }; weather: Array<{ main: string }> }>> = {};
+    for (const entry of data.list ?? []) {
+      const dateStr = (entry.dt_txt as string).split(' ')[0];
+      if (!entriesByDate[dateStr]) entriesByDate[dateStr] = [];
+      entriesByDate[dateStr].push(entry);
+    }
 
-    // Filter entries for tomorrow's date
-    const tomorrowEntries = (data.list ?? []).filter((entry: { dt_txt: string }) =>
-      entry.dt_txt.startsWith(tomorrowStr)
-    );
+    const dates = Object.keys(entriesByDate).sort();
+    // Skip today (index 0), use tomorrow (index 1)
+    const tomorrowStr = dates[1];
+    if (!tomorrowStr) return null;
 
-    if (tomorrowEntries.length === 0) return null;
+    const tomorrowEntries = entriesByDate[tomorrowStr];
+    if (!tomorrowEntries || tomorrowEntries.length === 0) return null;
 
     // Find max temp
     const high = Math.round(
@@ -99,11 +105,14 @@ async function fetchCurrentWeather(zip: string): Promise<CurrentWeather | null> 
   }
 }
 
-export const getCurrentWeather = unstable_cache(
-  fetchCurrentWeather,
-  ['current-weather'],
-  { revalidate: 300 } // 5 minutes
-);
+export async function getCurrentWeather(zip: string): Promise<CurrentWeather | null> {
+  const cached = unstable_cache(
+    () => fetchCurrentWeather(zip),
+    [`weather-${zip}`],
+    { revalidate: 300 }
+  );
+  return cached();
+}
 
 // === Forecast Lows ===
 

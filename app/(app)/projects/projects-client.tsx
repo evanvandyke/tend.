@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { TopBar } from '@/components/top-bar';
 import { SectionHeader } from '@/components/section-header';
 import { ProjectCard } from '@/components/project-card';
 import { FAB } from '@/components/fab';
@@ -33,16 +32,7 @@ export function ProjectsPageClient({
   const [showForm, setShowForm] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[var(--parchment)] pb-20">
-      <header
-        className="h-[56px] bg-[var(--parchment)] flex items-center justify-between px-4 border-b border-[var(--hairline)]"
-        style={{ borderBottomWidth: '0.5px' }}
-      >
-        <h1 className="font-[family-name:var(--font-display)] text-[28px] font-semibold text-[var(--iron-gall)] leading-none">
-          Projects
-        </h1>
-      </header>
-
+    <div className="pb-20">
       <main className="px-4">
         {active.length > 0 && (
           <>

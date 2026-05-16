@@ -8,7 +8,7 @@ import { SectionHeader } from '@/components/section-header';
 import type { UserTaskItem, RoutineTaskItem } from '@/lib/db/queries';
 
 type FilterType = 'all' | 'active' | 'completed';
-type SourceFilter = 'all' | 'my-tasks' | 'lawn' | 'garden';
+type SourceFilter = string; // 'all' | 'my-tasks' | module slug
 
 const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -16,12 +16,10 @@ const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
   { value: 'completed', label: 'Completed' },
 ];
 
-const SOURCE_OPTIONS: { value: SourceFilter; label: string }[] = [
-  { value: 'all', label: 'All Sources' },
-  { value: 'my-tasks', label: 'My Tasks' },
-  { value: 'lawn', label: 'Lawn' },
-  { value: 'garden', label: 'Garden' },
-];
+export interface ModuleSourceOption {
+  slug: string;
+  label: string;
+}
 
 const KIND_LABELS: Record<string, string> = {
   quick: 'Single Tasks',
@@ -37,12 +35,20 @@ const KIND_ORDER = ['quick', 'recurring', 'seasonal', 'project', 'longcycle'];
 interface TasksListClientProps {
   tasks: UserTaskItem[];
   routineTasks?: RoutineTaskItem[];
+  moduleSources?: ModuleSourceOption[];
 }
 
-function TasksListClient({ tasks: initialTasks, routineTasks = [] }: TasksListClientProps) {
+function TasksListClient({ tasks: initialTasks, routineTasks = [], moduleSources = [] }: TasksListClientProps) {
   const router = useRouter();
   const [filter, setFilter] = useState<FilterType>('all');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
+
+  // Build source filter options dynamically from enabled modules
+  const sourceOptions: { value: string; label: string }[] = [
+    { value: 'all', label: 'All Sources' },
+    { value: 'my-tasks', label: 'My Tasks' },
+    ...moduleSources.map((m) => ({ value: m.slug, label: m.label })),
+  ];
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [animStates, setAnimStates] = useState<Record<number, CompletionAnimState>>({});
@@ -67,14 +73,14 @@ function TasksListClient({ tasks: initialTasks, routineTasks = [] }: TasksListCl
   });
 
   // Apply source filter
+  const isModuleFilter = sourceFilter !== 'all' && sourceFilter !== 'my-tasks';
   const shouldShowUserTasks = sourceFilter === 'all' || sourceFilter === 'my-tasks';
-  const shouldShowRoutineTasks = sourceFilter === 'all' || sourceFilter === 'lawn' || sourceFilter === 'garden';
+  const shouldShowRoutineTasks = sourceFilter === 'all' || isModuleFilter;
 
   const visibleUserTasks = shouldShowUserTasks ? filteredTasks : [];
   const visibleRoutineTasks = shouldShowRoutineTasks
     ? filteredRoutineTasks.filter((t) => {
-        if (sourceFilter === 'lawn') return t.source === 'lawn';
-        if (sourceFilter === 'garden') return t.source === 'garden';
+        if (isModuleFilter) return t.source === sourceFilter;
         return true;
       })
     : [];
@@ -208,7 +214,7 @@ function TasksListClient({ tasks: initialTasks, routineTasks = [] }: TasksListCl
 
       {/* Source filter pills */}
       <div className="px-4 pt-1 pb-3 flex gap-2 overflow-x-auto">
-        {SOURCE_OPTIONS.map((opt) => (
+        {sourceOptions.map((opt) => (
           <button
             key={opt.value}
             onClick={() => setSourceFilter(opt.value)}

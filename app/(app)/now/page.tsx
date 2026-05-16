@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { format } from 'date-fns';
-import { TopBar, type LunarEventInfo } from '@/components/top-bar';
 import { NowFeedClient, type ProjectData } from '@/components/now-feed-client';
 import type { NowFeedItemData } from '@/components/now-feed-item';
 import { getNowFeed, getCompletedToday, type FeedItem } from '@/lib/db/queries';
@@ -57,15 +56,8 @@ export default async function NowPage() {
   });
   const doneToday: NowFeedItemData[] = completedToday.map(feedItemToClientData);
 
-  // Find the next lunar event in thisWeek for the header callout
-  const nextLunarEvent = thisWeek.find((item) => item.type === 'lunar-event');
-  const lunarEvent: LunarEventInfo | null = nextLunarEvent
-    ? { name: nextLunarEvent.title, date: nextLunarEvent.eventDate ?? '' }
-    : null;
-
   return (
     <>
-      <TopBar showSeason lunarEvent={lunarEvent} />
       <NowFeedClient
         thisWeek={thisWeek}
         comingUp={comingUp}

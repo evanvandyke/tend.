@@ -25,12 +25,18 @@ export interface LunarEventInfo {
   date: string;
 }
 
-interface TopBarProps {
-  showSeason?: boolean;
-  lunarEvent?: LunarEventInfo | null;
+export interface WeatherInfo {
+  temp: number;
+  condition: string;
+  icon: string;
 }
 
-function TopBar({ showSeason = false, lunarEvent }: TopBarProps) {
+interface TopBarProps {
+  lunarEvent?: LunarEventInfo | null;
+  weather?: WeatherInfo | null;
+}
+
+function TopBar({ lunarEvent, weather }: TopBarProps) {
   const now = new Date();
   const dayOfWeek = format(now, 'EEEE');
   const dayMonth = format(now, 'd MMMM');
@@ -44,17 +50,20 @@ function TopBar({ showSeason = false, lunarEvent }: TopBarProps) {
           Tend<span className="text-[var(--bordeaux)]">.</span>
         </h1>
 
-        {/* Date + Season */}
+        {/* Date + Season + Weather */}
         <div className="text-right font-[family-name:var(--font-body)] text-[13px] text-[var(--sepia)] leading-tight">
           <div>{dayOfWeek}</div>
           <div>
             {dayMonth}
-            {showSeason && (
-              <span className="font-[family-name:var(--font-display)] italic">
-                {' · '}{SEASON_EMOJI[season]} {season.charAt(0).toUpperCase() + season.slice(1)}
-              </span>
-            )}
+            <span className="font-[family-name:var(--font-display)] italic">
+              {' · '}{SEASON_EMOJI[season]} {season.charAt(0).toUpperCase() + season.slice(1)}
+            </span>
           </div>
+          {weather && (
+            <div className="mt-0.5">
+              {weather.icon} {weather.temp}°F
+            </div>
+          )}
         </div>
       </div>
 

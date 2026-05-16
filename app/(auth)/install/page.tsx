@@ -57,6 +57,36 @@ export default function InstallPage() {
 
   if (!platform) return null;
 
+  const stepStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 16,
+  };
+
+  const stepIconStyle: React.CSSProperties = {
+    flexShrink: 0,
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    background: 'var(--forest)',
+    color: 'var(--vellum)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: 'var(--font-display)',
+  };
+
+  const stepTextStyle: React.CSSProperties = {
+    fontFamily: 'var(--font-body)',
+    fontSize: 15,
+    color: 'var(--iron-gall)',
+    lineHeight: 1.5,
+    paddingTop: 5,
+  };
+
   return (
     <div style={{ width: '100%', maxWidth: 400, padding: '0 24px' }}>
       {/* Wordmark */}
@@ -77,14 +107,14 @@ export default function InstallPage() {
       <p
         style={{
           fontFamily: 'var(--font-body)',
-          fontStyle: 'italic',
           fontSize: 16,
           color: 'var(--text-secondary)',
           textAlign: 'center',
           margin: '0 0 32px 0',
+          lineHeight: 1.5,
         }}
       >
-        Install for the best experience.
+        Add Tend to your home screen for the full experience&mdash;it opens like a real app, no app store needed.
       </p>
 
       {/* Android Chrome */}
@@ -107,7 +137,7 @@ export default function InstallPage() {
               cursor: promptReady ? 'pointer' : 'not-allowed',
             }}
           >
-            {promptReady ? 'Install Tend.' : 'Preparing install...'}
+            {promptReady ? 'Add to Home Screen' : 'One moment...'}
           </button>
         </div>
       )}
@@ -115,37 +145,36 @@ export default function InstallPage() {
       {/* iOS Safari */}
       {platform.isIOS && platform.isSafari && (
         <div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 19,
-              fontWeight: 600,
-              color: 'var(--iron-gall)',
-              margin: '0 0 16px 0',
-            }}
-          >
-            Add to Home Screen
-          </h2>
-          <ol
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 16,
-              color: 'var(--iron-gall)',
-              paddingLeft: 20,
-              lineHeight: 1.8,
-            }}
-          >
-            <li>
-              Tap the <strong>Share</strong> button (square with arrow)
-            </li>
-            <li>
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>1</div>
+            <p style={stepTextStyle}>
+              Tap the <strong>Share</strong> button at the bottom of your screen
+              <span style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
+                (the square with an arrow pointing up)
+              </span>
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>2</div>
+            <p style={stepTextStyle}>
               Scroll down and tap <strong>Add to Home Screen</strong>
-            </li>
-            <li>
-              Tap <strong>Add</strong>
-            </li>
-            <li>Open Tend. from your home screen</li>
-          </ol>
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>3</div>
+            <p style={stepTextStyle}>
+              Tap <strong>Add</strong> in the top corner
+            </p>
+          </div>
+
+          <div style={stepStyle}>
+            <div style={stepIconStyle}>4</div>
+            <p style={stepTextStyle}>
+              Open Tend from your home screen&mdash;that&rsquo;s it!
+            </p>
+          </div>
         </div>
       )}
 
@@ -155,12 +184,13 @@ export default function InstallPage() {
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: 16,
+              fontSize: 15,
               color: 'var(--iron-gall)',
               marginBottom: 16,
+              lineHeight: 1.5,
             }}
           >
-            Open this page in <strong>Safari</strong> to install Tend.
+            To add Tend to your home screen, you&rsquo;ll need to open this link in <strong>Safari</strong>.
           </p>
           <button
             onClick={copyLink}
@@ -178,8 +208,18 @@ export default function InstallPage() {
               cursor: 'pointer',
             }}
           >
-            {copied ? 'Link Copied!' : 'Copy Link'}
+            {copied ? 'Copied!' : 'Copy Link'}
           </button>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 13,
+              color: 'var(--text-secondary)',
+              marginTop: 10,
+            }}
+          >
+            Paste it into Safari&rsquo;s address bar
+          </p>
         </div>
       )}
 
@@ -203,19 +243,20 @@ export default function InstallPage() {
                 cursor: 'pointer',
               }}
             >
-              Install Tend.
+              Add to Home Screen
             </button>
           ) : (
             <>
               <p
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 16,
+                  fontSize: 15,
                   color: 'var(--iron-gall)',
                   marginBottom: 16,
+                  lineHeight: 1.5,
                 }}
               >
-                Works great in the browser.
+                Tend works great in the browser too.
               </p>
               <button
                 onClick={() => router.push('/now')}
@@ -240,7 +281,7 @@ export default function InstallPage() {
         </div>
       )}
 
-      {/* Skip */}
+      {/* Continue in browser */}
       <p style={{ textAlign: 'center', marginTop: 24 }}>
         <button
           onClick={() => router.push('/now')}
@@ -254,7 +295,7 @@ export default function InstallPage() {
             textDecoration: 'underline',
           }}
         >
-          Skip for now
+          I&rsquo;ll do this later
         </button>
       </p>
     </div>

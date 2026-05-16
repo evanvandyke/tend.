@@ -1,6 +1,5 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { TopBar } from '@/components/top-bar';
 import { getUser } from '@/lib/db/queries';
 import { SettingsClient } from '@/components/settings-client';
 
@@ -16,7 +15,6 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <TopBar />
       <SettingsClient
         user={{
           id: user.id,

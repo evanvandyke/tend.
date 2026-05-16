@@ -76,12 +76,9 @@ export function ProjectDetailClient({ project }: { project: Project }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--parchment)] pb-20">
+    <div className="pb-20">
       {/* Back nav */}
-      <header
-        className="h-[56px] bg-[var(--parchment)] flex items-center px-4 border-b border-[var(--hairline)]"
-        style={{ borderBottomWidth: '0.5px' }}
-      >
+      <div className="h-[44px] flex items-center px-4">
         <button
           onClick={() => router.push('/projects')}
           className="flex items-center gap-2 text-[var(--forest)] font-[family-name:var(--font-display)] text-[15px] font-medium cursor-pointer"
@@ -89,7 +86,7 @@ export function ProjectDetailClient({ project }: { project: Project }) {
           <ArrowLeft size={20} strokeWidth={1.5} />
           Projects
         </button>
-      </header>
+      </div>
 
       <main className="px-4 pt-6">
         {/* Title */}

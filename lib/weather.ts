@@ -1,4 +1,56 @@
+import { unstable_cache } from 'next/cache';
+
 const API_KEY = process.env.OPENWEATHERMAP_API_KEY;
+
+// === Current Weather ===
+
+export interface CurrentWeather {
+  temp: number;
+  condition: string;
+  icon: string;
+}
+
+const CONDITION_EMOJI: Record<string, string> = {
+  Clear: '☀️',
+  Clouds: '☁️',
+  Rain: '🌧️',
+  Drizzle: '🌧️',
+  Thunderstorm: '⛈️',
+  Snow: '❄️',
+  Mist: '🌫️',
+  Fog: '🌫️',
+  Haze: '🌫️',
+};
+
+async function fetchCurrentWeather(zip: string): Promise<CurrentWeather | null> {
+  if (!API_KEY) return null;
+
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zip},US&units=imperial&appid=${API_KEY}`;
+    const res = await fetch(url, { next: { revalidate: 300 } }); // 5-min cache
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const mainCondition = data.weather?.[0]?.main ?? 'Clear';
+
+    return {
+      temp: Math.round(data.main.temp),
+      condition: mainCondition,
+      icon: CONDITION_EMOJI[mainCondition] ?? '🌤️',
+    };
+  } catch {
+    return null;
+  }
+}
+
+export const getCurrentWeather = unstable_cache(
+  fetchCurrentWeather,
+  ['current-weather'],
+  { revalidate: 300 } // 5 minutes
+);
+
+// === Forecast Lows ===
 
 interface DayLow {
   date: string;

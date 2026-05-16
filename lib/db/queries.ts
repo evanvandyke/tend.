@@ -72,6 +72,16 @@ export async function getUpcomingLunarEvents(fromDate: Date, days: number = 7) {
     .orderBy(asc(lunarEvents.eventDate));
 }
 
+export async function getNextLunarEvent(fromDate: Date) {
+  const [event] = await db
+    .select()
+    .from(lunarEvents)
+    .where(gte(lunarEvents.eventDate, fromDate))
+    .orderBy(asc(lunarEvents.eventDate))
+    .limit(1);
+  return event ?? null;
+}
+
 // === Now Feed ===
 
 function sortByDueAtNullsLast(a: FeedItem, b: FeedItem): number {

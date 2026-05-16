@@ -1,6 +1,5 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { TopBar } from '@/components/top-bar';
 import { GardenDetail } from '@/components/garden-detail';
 import { PLANT_CATALOG, computePlantNextActions } from '@/lib/modules/garden';
 import { db } from '@/lib/db';
@@ -51,15 +50,12 @@ export default async function GardenModulePage() {
   };
 
   return (
-    <>
-      <TopBar />
-      <main className="flex-1 pb-20">
-        <GardenDetail
-          catalog={catalog}
-          plantActions={serializedPlantActions}
-          frostInfo={frostInfo}
-        />
-      </main>
-    </>
+    <main className="flex-1 pb-20">
+      <GardenDetail
+        catalog={catalog}
+        plantActions={serializedPlantActions}
+        frostInfo={frostInfo}
+      />
+    </main>
   );
 }

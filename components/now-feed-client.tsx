@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/section-header';
 import { NowFeedItem, type NowFeedItemData } from '@/components/now-feed-item';
 import { ProjectCard } from '@/components/project-card';
 import { BottomNav } from '@/components/bottom-nav';
+import { SeasonalBanner } from '@/components/seasonal-banner';
 
 export interface ProjectData {
   id: string;
@@ -63,6 +64,7 @@ function NowFeedClient({ thisWeek, comingUp, openProjects }: NowFeedClientProps)
   return (
     <>
       <main className="pb-40 pt-2">
+        <SeasonalBanner />
         {thisWeek.length > 0 && (
           <>
             <SectionHeader

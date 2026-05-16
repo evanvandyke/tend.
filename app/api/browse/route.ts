@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     id: item.id,
     type: item.type,
     title: item.title,
-    dueDate: item.dueAt ? format(item.dueAt, 'MMM d') : undefined,
+    dueDate: item.dueAt ? item.dueAt.toISOString() : undefined,
     isCompleted: item.isCompleted,
     moduleSource: item.moduleTag === 'lunar-event' ? undefined : item.moduleTag,
     eventDate: item.type === 'lunar-event' && item.dueAt ? format(item.dueAt, 'MMM d') : undefined,

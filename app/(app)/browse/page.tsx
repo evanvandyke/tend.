@@ -1,9 +1,9 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getBrowseFeed } from '@/lib/db/queries';
+import { format } from 'date-fns';
 import { TopBar } from '@/components/top-bar';
 import { BrowseClient } from '@/components/browse-client';
-import { format } from 'date-fns';
 
 export default async function BrowsePage() {
   const session = await auth();
@@ -20,7 +20,7 @@ export default async function BrowsePage() {
     id: item.id,
     type: item.type as 'user-task' | 'module-task' | 'garden-task' | 'lunar-event',
     title: item.title,
-    dueDate: item.dueAt ? format(item.dueAt, 'MMM d') : undefined,
+    dueDate: item.dueAt ? item.dueAt.toISOString() : undefined,
     isCompleted: item.isCompleted,
     moduleSource: item.moduleTag === 'lunar-event' ? undefined : (item.moduleTag as 'lawn' | 'garden' | 'project' | 'task' | undefined),
     eventDate: item.type === 'lunar-event' && item.dueAt ? format(item.dueAt, 'MMM d') : undefined,

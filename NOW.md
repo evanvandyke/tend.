@@ -1,6 +1,30 @@
 # What's Next
 *The one file to check. Updated at the end of every session.*
-*Last updated: 2026-05-16 (Session 2)*
+*Last updated: 2026-05-16 (Session 3)*
+
+## Session 3 — Onboarding + Notifications + Favicon (2026-05-16)
+
+Third session, run in parallel with Session 2's tail end. Focused on new-user experience and notification strategy.
+
+**What got done:**
+- Install page rework — warm copy replacing dev jargon, platform-specific steps (iOS Safari vs iOS Chrome vs other), "I'll do this later" skip
+- Platform detection fix — CriOS/FxiOS/OPiOS/EdgiOS now correctly identified as non-Safari on iOS
+- Onboarding setup wizard (`/setup`) — 4-step flow: ZIP code → module toggles → notification opt-in → app concept overview
+- Onboarding gate — `onboardingComplete` column on users table, new users redirected to /setup until complete
+- Smart notification step — only shows when running as installed PWA (skipped in browser since iOS requires standalone for push)
+- Friday weekend briefing — replaced daily multi-notification cron with single Friday 5 PM MST summary (tasks, Saturday weather, lunar events)
+- Settings notification label updated to "Weekend Briefing"
+- Route restructuring — moved install page from `(auth)` to `(onboarding)` route group to fix authenticated-user redirect bug
+- New favicon — botanical T monogram (serif T with leaf sprig), moved from app/ to public/ for proper Vercel serving
+- PWA manifest `short_name` fixed to include period ("Tend.")
+
+**Known issues for next session:**
+- Garden page: still can't add new plants
+- Notification opt-in needs real-device PWA testing (works in flow, but push permission prompt untested end-to-end from standalone)
+- Weekend briefing cron untested in production (first fire: next Friday)
+- Onboarding doesn't pre-populate default ZIP from signup (user must enter manually)
+
+---
 
 ## Session 2 — Core UX Polish + Feature Buildout (2026-05-16)
 

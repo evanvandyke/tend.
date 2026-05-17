@@ -25,6 +25,10 @@ export default async function AppLayout({
     getUser(session.user.id!),
   ]);
 
+  if (user?.onboardingComplete === false) {
+    redirect('/setup');
+  }
+
   const lunarEvent: LunarEventInfo | null = nextEvent
     ? { name: nextEvent.name, date: format(nextEvent.eventDate, 'MMM d') }
     : null;

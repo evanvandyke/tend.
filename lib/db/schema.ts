@@ -25,6 +25,7 @@ export const users = pgTable('users', {
   locationZip: text('location_zip').default('84003'),
   emailNotificationsEnabled: boolean('email_notifications_enabled').default(true),
   pushNotificationsEnabled: boolean('push_notifications_enabled').default(true),
+  onboardingComplete: boolean('onboarding_complete').default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

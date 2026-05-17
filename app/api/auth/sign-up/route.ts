@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       email,
       passwordHash,
       name,
+      onboardingComplete: false,
     });
 
     return NextResponse.json({ success: true }, { status: 201 });

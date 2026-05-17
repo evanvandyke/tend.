@@ -42,6 +42,14 @@ export default function SetupPage() {
 
   // Step 3: Notifications
   const [notifState, setNotifState] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle');
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    const standalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as unknown as { standalone?: boolean }).standalone === true;
+    setIsStandalone(standalone);
+  }, []);
 
   const goTo = useCallback((nextStep: number, dir: 'forward' | 'back') => {
     setDirection(dir);
@@ -197,7 +205,7 @@ export default function SetupPage() {
           marginBottom: 32,
         }}
       >
-        {[1, 2, 3, 4].map((s) => (
+        {(isStandalone ? [1, 2, 3, 4] : [1, 2, 4]).map((s) => (
           <div
             key={s}
             style={{
@@ -356,7 +364,7 @@ export default function SetupPage() {
             </div>
           )}
 
-          <button onClick={() => goTo(3, 'forward')} style={buttonStyle}>
+          <button onClick={() => goTo(isStandalone ? 3 : 4, 'forward')} style={buttonStyle}>
             Next
           </button>
 
@@ -544,12 +552,18 @@ export default function SetupPage() {
             </div>
           </div>
 
-          <button onClick={() => router.push('/now')} style={buttonStyle}>
+          <button
+            onClick={async () => {
+              await fetch('/api/settings/onboarding', { method: 'POST' });
+              router.push('/now');
+            }}
+            style={buttonStyle}
+          >
             Let&rsquo;s go
           </button>
 
           <p style={{ textAlign: 'center', marginTop: 16 }}>
-            <button onClick={() => goTo(3, 'back')} style={backStyle}>
+            <button onClick={() => goTo(isStandalone ? 3 : 2, 'back')} style={backStyle}>
               Back
             </button>
           </p>

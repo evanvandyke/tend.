@@ -114,7 +114,7 @@ export default function InstallPage() {
           lineHeight: 1.5,
         }}
       >
-        Add Tend to your home screen for the full experience&mdash;it opens like a real app, no app store needed.
+        Add Tend to your home screen for the full experience&mdash;it opens like a real app, with notifications and no app store needed.
       </p>
 
       {/* Android Chrome */}

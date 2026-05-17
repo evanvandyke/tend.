@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Tend.',
-    short_name: 'Tend',
+    short_name: 'Tend.',
     description: 'An almanac for the home.',
     start_url: '/',
     display: 'standalone',

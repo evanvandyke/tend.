@@ -22,6 +22,14 @@ export const metadata: Metadata = {
   description: "An almanac for the home. Organize your household by season, rhythm, and weather.",
   keywords: ["almanac", "home", "garden", "lawn care", "household tasks"],
   authors: [{ name: "Evan Van Dyke" }],
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

@@ -89,9 +89,18 @@ Second session. Built on the v1 foundation from Session 1 (full PWA deployed to 
 
 ## Future Ideas (backlog)
 
-- AI features: natural language task entry, weekly briefing, "ask Tend." chat
+### Multi-region content engine (big vision)
+Currently lawn/garden modules are hardcoded for Northern Utah. To support multiple users/locations:
+- **Location-aware modules:** Lawn care schedules, fertilizer timing, application rates, and product recommendations should be driven by region/zone (USDA hardiness zone, climate zone, or ZIP-based). Database-backed module content instead of code-defined task templates.
+- **Grass type module:** Different grass types (cool-season vs warm-season) have completely different care schedules. Could be an advanced module selection during onboarding.
+- **Garden regional adaptation:** Planting windows, frost dates, and variety recommendations vary by location. Already have frost-date-by-ZIP — extend to full regional garden calendars.
+
+### AI features (freemium model)
+- **Plant/lawn health analysis:** Take a photo of your grass or produce → AI evaluates health, identifies issues (disease, nutrient deficiency, pests), provides specific treatment recommendations. This is the premium add-on — the upgrade path for a freemium model.
+- Natural language task entry, weekly briefing, "ask Tend." chat
+
+### Other
 - Garden plot layout / spatial drag-and-drop view
 - Chicken module (waiting for friend confirmation)
 - Dark mode ("midnight ledger" theme, designed from scratch)
-- Multi-region frost dates / soil temperature data
 - Task completion celebration — confetti, animation, dopamine hit

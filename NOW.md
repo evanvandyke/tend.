@@ -19,6 +19,7 @@ Third session, run in parallel with Session 2's tail end. Focused on new-user ex
 - PWA manifest `short_name` fixed to include period ("Tend.")
 
 **Known issues for next session:**
+- **Mid-season catch-up (priority):** When a new user enables a module mid-season, tasks whose windows recently closed are invisible. E.g., "start up sprinklers" (Apr 1–30) doesn't appear for a user who signs up May 16. Need a "catch-up" view on first module enable — show tasks from the last 30 days (or current season) that are still relevant. Also consider letting users browse the full year timeline on Routines detail pages to manually add/complete past-window tasks. Touches `getNowFeed`, `isInWindow`, and potentially frost-date logic — needs careful implementation.
 - Garden page: still can't add new plants
 - Notification opt-in needs real-device PWA testing (works in flow, but push permission prompt untested end-to-end from standalone)
 - Weekend briefing cron untested in production (first fire: next Friday)

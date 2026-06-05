@@ -74,7 +74,8 @@ export async function POST(request: NextRequest) {
       .returning();
 
     return NextResponse.json(completion, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error('POST /api/completions failed:', error);
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

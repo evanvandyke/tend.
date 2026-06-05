@@ -126,7 +126,8 @@ export async function PATCH(
       .returning();
 
     return NextResponse.json(updated);
-  } catch {
+  } catch (error) {
+    console.error('PATCH /api/tasks/[id] failed:', error);
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

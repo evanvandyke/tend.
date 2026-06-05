@@ -58,7 +58,8 @@ export async function PATCH(
       .returning();
 
     return NextResponse.json(updated);
-  } catch {
+  } catch (error) {
+    console.error('PATCH /api/tasks/[id]/subtask failed:', error);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }

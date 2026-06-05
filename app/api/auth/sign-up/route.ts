@@ -47,6 +47,7 @@ export async function POST(request: Request) {
       );
     }
 
+    console.error('POST /api/auth/sign-up failed:', error);
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

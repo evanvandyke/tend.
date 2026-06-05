@@ -58,7 +58,8 @@ export async function PATCH(request: Request) {
       .where(eq(users.id, session.user.id));
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    console.error('PATCH /api/auth/change-password failed:', error);
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

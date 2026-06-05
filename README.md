@@ -30,7 +30,8 @@ Three signature details:
 - **Styling:** Tailwind CSS + CSS custom properties
 - **Typography:** EB Garamond + Lora (Google Fonts via `next/font`)
 - **Icons:** Lucide React (1.5px stroke)
-- **Backend:** Supabase (auth, database, real-time)
+- **Database:** Neon Postgres + Drizzle ORM
+- **Auth:** Auth.js v5 (credentials + JWT)
 - **Deployment:** Vercel
 
 ## Getting Started

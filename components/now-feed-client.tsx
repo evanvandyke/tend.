@@ -65,13 +65,21 @@ function NowFeedClient({ thisWeek, comingUp, openProjects, doneToday = [] }: Now
 
   const handleTaskPress = useCallback((id: string, type: NowFeedItemData['type']) => {
     if (type === 'user-task') {
-      setEditingTaskId(id);
+      // Projects (now bucketed into This Week / Coming Up) open their detail page;
+      // plain tasks open the inline edit sheet.
+      const allItems = [...thisWeek, ...comingUp];
+      const item = allItems.find(i => i.id === id);
+      if (item?.moduleSource === 'project') {
+        router.push(`/projects/${id}`);
+      } else {
+        setEditingTaskId(id);
+      }
     } else if (type === 'module-task' || type === 'garden-task') {
       const allItems = [...thisWeek, ...comingUp];
       const item = allItems.find(i => i.id === id);
       if (item) setModuleActionItem(item);
     }
-  }, [thisWeek, comingUp]);
+  }, [thisWeek, comingUp, router]);
 
   const executeCompletion = useCallback(async (id: string, type: NowFeedItemData['type']) => {
     try {

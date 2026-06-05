@@ -16,11 +16,28 @@ interface Project {
   title: string;
   content: string | null;
   projectData: unknown;
+  dueAt?: string | Date | null;
+}
+
+// Convert a timestamp (or YYYY-MM-DD) to the YYYY-MM-DD string a date input expects.
+function toDateInputValue(value?: string | Date | null): string {
+  if (!value) return '';
+  const d = typeof value === 'string' ? new Date(value) : value;
+  if (isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 export function EditProjectClient({ project }: { project: Project }) {
   const router = useRouter();
   const pd = (project.projectData as ProjectData | null) ?? {};
+  // dueAt is the source of truth; fall back to the legacy targetCompletion
+  // for projects that haven't been backfilled yet.
+  const targetCompletion = project.dueAt
+    ? toDateInputValue(project.dueAt)
+    : toDateInputValue(pd.targetCompletion);
 
   return (
     <div className="pb-20">
@@ -43,7 +60,7 @@ export function EditProjectClient({ project }: { project: Project }) {
           initialData={{
             title: project.title,
             content: project.content ?? '',
-            targetCompletion: pd.targetCompletion ?? '',
+            targetCompletion,
             subtasks: pd.subtasks ?? [],
             materials: pd.materials ?? [],
           }}

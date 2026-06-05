@@ -28,6 +28,7 @@ interface Project {
   content: string | null;
   status: string;
   projectData: unknown;
+  dueAt?: string | Date | null;
 }
 
 export function ProjectDetailClient({ project }: { project: Project }) {
@@ -101,16 +102,25 @@ export function ProjectDetailClient({ project }: { project: Project }) {
           </p>
         )}
 
-        {/* Target completion */}
-        {pd.targetCompletion && (
-          <div className="mt-4 font-[family-name:var(--font-display)] text-[13px] font-semibold text-[var(--sepia)]">
-            Target: {new Date(pd.targetCompletion).toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          </div>
-        )}
+        {/* Target completion — dueAt is the source of truth; fall back to legacy targetCompletion.
+            Format from the date-only portion in LOCAL time (matching the Now feed's task-row),
+            so a UTC-midnight dueAt doesn't display a day early in negative-offset timezones. */}
+        {(() => {
+          const raw = project.dueAt ?? pd.targetCompletion;
+          if (!raw) return null;
+          const iso = typeof raw === 'string' ? raw : new Date(raw).toISOString();
+          const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+          const display = new Date(y, m - 1, d).toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+          });
+          return (
+            <div className="mt-4 font-[family-name:var(--font-display)] text-[13px] font-semibold text-[var(--sepia)]">
+              Target: {display}
+            </div>
+          );
+        })()}
 
         {/* Subtasks */}
         {subtasks.length > 0 && (

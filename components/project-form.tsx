@@ -76,16 +76,20 @@ export function ProjectForm({ initialData, taskId, onSuccess, onCancel }: Projec
     const projectData = {
       subtasks,
       materials,
-      targetCompletion: targetCompletion || undefined,
     };
+
+    // dueAt is the single source of truth for a project's date.
+    // Convert the date input's YYYY-MM-DD value to an ISO datetime
+    // (matching the FAB quick-add and the API's z.string().datetime() schema).
+    const dueAt = targetCompletion ? new Date(targetCompletion).toISOString() : undefined;
 
     try {
       const isEdit = !!taskId;
       const url = isEdit ? `/api/tasks/${taskId}` : '/api/tasks';
       const method = isEdit ? 'PATCH' : 'POST';
       const body = isEdit
-        ? { title: title.trim(), content: content.trim() || null, projectData }
-        : { title: title.trim(), kind: 'project', content: content.trim() || undefined, projectData };
+        ? { title: title.trim(), content: content.trim() || null, projectData, dueAt }
+        : { title: title.trim(), kind: 'project', content: content.trim() || undefined, projectData, dueAt };
 
       const res = await fetch(url, {
         method,

@@ -117,9 +117,8 @@ export async function getNowFeed(userId: string): Promise<NowFeedResult> {
     .orderBy(asc(userTasks.dueAt));
 
   for (const task of activeUserTasks) {
-    // Projects go to their own section
     if (task.kind === 'project') {
-      openProjects.push({
+      const projectItem: FeedItem = {
         id: `user-task-${task.id}`,
         type: 'user-task',
         title: task.title,
@@ -130,7 +129,20 @@ export async function getNowFeed(userId: string): Promise<NowFeedResult> {
         taskId: task.id,
         kind: task.kind,
         projectData: task.projectData,
-      });
+      };
+
+      // Dateless projects keep their own Open Projects section.
+      if (!task.dueAt) {
+        openProjects.push(projectItem);
+        continue;
+      }
+
+      // Dated projects bucket into This Week / Coming Up like tasks.
+      if (task.dueAt <= in7Days) {
+        thisWeek.push(projectItem);
+      } else {
+        comingUp.push(projectItem);
+      }
       continue;
     }
 
